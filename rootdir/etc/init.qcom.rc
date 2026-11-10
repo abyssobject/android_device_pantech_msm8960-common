@@ -30,8 +30,6 @@ import init.target.rc
 import init.qcom.power.rc
 
 on init
-    # Set permissions for persist partition
-    mkdir /persist 0771 system system
     # Support legacy paths
     symlink /sdcard /mnt/sdcard
     symlink /sdcard /storage/sdcard0
@@ -60,12 +58,16 @@ on early-boot
     #setprop qcom.audio.init complete
 
 on boot
+    # ef52: zram swap (1024 MB, fstab.qcom)
+    write /proc/sys/vm/swappiness 100
+    write /proc/sys/vm/page-cluster 0
+    swapon_all /vendor/etc/fstab.qcom
+
 # basic network init
 #    ifup lo
 #    hostname localhost
 #    domainname localdomain
     
-    setprop persist.sys.usb.config "cdrom,mtp,diag,diag_mdm,serial_hsic,obex,adb"
     setprop sys.usb.ffs.aio_compat 1   
 
 #LS1 LCD
@@ -253,6 +255,9 @@ on post-fs-data
     mkdir /data/misc/wifi 0770 wifi wifi
     mkdir /data/misc/wifi/sockets 0770 wifi wifi
     mkdir /data/misc/wifi/wpa_supplicant 0770 wifi wifi
+    mkdir /data/vendor/wifi 0770 wifi wifi
+    mkdir /data/vendor/wifi/wpa 0770 wifi wifi
+    mkdir /data/vendor/wifi/wpa/sockets 0770 wifi wifi
     mkdir /data/misc/dhcp 0770 dhcp dhcp
     chown dhcp dhcp /data/misc/dhcp
     
@@ -263,7 +268,8 @@ on post-fs-data
     mkdir /data/connectivity/nsrm 0771 system system
     chown system system /data/connectivity/nsrm
     
-    # Update WIFI MAC address 
+    # Prepare factory addresses before the radio firmware and HALs start.
+    exec_start config_bluetooth
     write /dev/wcnss_wlan 1
     write /sys/module/wcnss_ssr_8960/parameters/enable_riva_ssr 1
 
@@ -351,6 +357,8 @@ on post-fs-data
 
     mkdir /persist/sensors
     chmod 775 /persist/sensors
+    # ef52: DSPS daemon before class hal (sensors HAL needs it)
+    start sensors
     
     # Vibrator
     chown root system /sys/devices/platform/msm_ssbi.0/pm8921-core/pm8xxx-vib/amp
@@ -450,12 +458,6 @@ on property:persist.debug.trace=1
     write /sys/bus/coresight/devices/coresight-etm2/enable 1
     write /sys/bus/coresight/devices/coresight-etm3/enable 1
 
-on property:init.svc.wpa_supplicant=stopped
-    stop dhcpcd
-
-on property:init.svc.p2p_supplicant=stopped
-    stop dhcpcd
-
 on property:bluetooth.isEnabled=true
     write /sys/class/bluetooth/hci0/idle_timeout 7000
 
@@ -475,15 +477,16 @@ service qcom-sh /system/vendor/bin/sh /init.qcom.sh
     user root
     oneshot
 
-service config_bluetooth /system/bin/sh /system/etc/init.qcom.bt.sh "onboot"
+service config_bluetooth /system/bin/sh /system/vendor/etc/init.qcom.bt.sh "onboot"
     class core
     user root
+    disabled
     oneshot
 
 service hciattach /system/bin/sh /system/vendor/etc/init.qcom.bt.sh
     class late_start
     user bluetooth
-    group qcom_oncrpc bluetooth net_bt_admin system
+    group bluetooth net_bt_admin system
     disabled
     seclabel u:r:bluetooth_loader:s0
     oneshot
@@ -495,11 +498,11 @@ service bt-dun /system/bin/dun-server /dev/smd7 /dev/rfcomm0
     disabled
     oneshot
 
-on property:bluetooth.hciattach=true
+on property:vendor.bluetooth.hciattach=true
     start hciattach
 
-on property:bluetooth.hciattach=false
-    setprop bluetooth.status off
+on property:vendor.bluetooth.hciattach=false
+    setprop vendor.bluetooth.status off
 
 service bridgemgrd /system/vendor/bin/bridgemgrd
     class late_start
@@ -544,18 +547,12 @@ on property:ro.use_data_netmgrd=false
 on property:ro.data.large_tcp_window_size=true
     write /proc/sys/net/ipv4/tcp_adv_win_scale  2
 
+# Interfaces and configuration files are created through the supplicant HIDL API.
 service wpa_supplicant /vendor/bin/hw/wpa_supplicant \
-    -ip2p0 -Dnl80211 -c/data/misc/wifi/p2p_supplicant.conf \
-    -I/vendor/etc/wifi/p2p_supplicant_overlay.conf -N \
-    -iwlan0 -Dnl80211 -c/data/misc/wifi/wpa_supplicant.conf \
-    -I/vendor/etc/wifi/wpa_supplicant_overlay.conf \
-    -O/data/misc/wifi/sockets -puse_p2p_group_interface=1\
-    -e/data/misc/wifi/entropy.bin -g@android:wpa_wlan0
-#   we will start as root and wpa_supplicant will switch to user wifi
-#   after setting up the capabilities required for WEXT
-#   user wifi
-#   group wifi inet keystore
+    -O/data/vendor/wifi/wpa/sockets -puse_p2p_group_interface=1 \
+    -e/data/vendor/wifi/wpa/entropy.bin -g@android:wpa_wlan0
     class main
+    interface aidl android.hardware.wifi.supplicant.ISupplicant/default
     socket wpa_wlan0 dgram 660 wifi wifi
     disabled
     oneshot
@@ -571,12 +568,7 @@ on property:crypto.driver.load=0
 on property:sys.boot_completed=1
     write /sys/kernel/fast_charge/force_fast_charge 1
 
-service hostapd /system/vendor/bin/hostapd -dddd /data/misc/wifi/hostapd.conf
-    class late_start
-    user root
-    group root
-    oneshot
-    disabled
+# The hostapd module installs its HIDL service definition.
 
 service ds_fmc_appd /system/vendor/bin/ds_fmc_appd -p "rmnet0" -D
     class late_start
@@ -597,7 +589,7 @@ service ril-daemon1 /system/bin/rild -c 1
     socket rild-debug1 stream 660 radio system
     user root
     disabled
-    group radio cache inet misc audio sdcard_r sdcard_rw qcom_oncrpc diag log
+    group radio cache inet misc audio sdcard_r sdcard_rw diag log
 
 service charger /charger
     class charger
@@ -612,15 +604,6 @@ on property:persist.sys.ssr.restart_level=1
     write /sys/module/subsystem_restart/parameters/restart_level 1
 on property:persist.sys.ssr.restart_level=3
     write /sys/module/subsystem_restart/parameters/restart_level 3
-    
-on property:persist.radio.sglte_sim_active=true
-    kill qmiproxy 15
-on property:persist.radio.sglte_sim_active=false
-    kill qmiproxy 15
-on property:persist.radio.sglte_csfb=true
-    kill qmiproxy 15
-on property:persist.radio.sglte_csfb=false
-    kill qmiproxy 15
     
 service fetch-swv /system/vendor/bin/fetch-swv
     class late_start

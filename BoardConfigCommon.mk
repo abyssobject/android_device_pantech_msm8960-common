@@ -16,6 +16,9 @@
 
 COMMON_PATH := device/pantech/msm8960-common
 
+# Keep vendor-only boot properties even without split property overrides.
+TARGET_VENDOR_PROP += $(COMMON_PATH)/vendor.prop
+
 # inherit from the proprietary version
 -include vendor/pantech/msm8960-common/BoardConfigVendor.mk
 TARGET_SPECIFIC_HEADER_PATH 		:= device/pantech/msm8960-common/include
@@ -42,6 +45,9 @@ TARGET_CPU_VARIANT := krait
 # Binder
 TARGET_USES_64_BIT_BINDER := true
 
+# The 3.4 kernel includes memfd_create; bypass ART's kernel version check.
+TARGET_HAS_MEMFD_BACKPORT := true
+
 # Boot and recovery config
 BOARD_KERNEL_BASE := 0x80200000
 BOARD_KERNEL_PAGESIZE := 2048
@@ -50,11 +56,19 @@ BOARD_MKBOOTIMG_ARGS := --ramdisk_offset 0x2000000
 BOARD_KERNEL_IMAGE_NAME := zImage
 BOARD_KERNEL_CMDLINE := console=NULL,115200,n8 androidboot.hardware=qcom user_debug=31 msm_rtb.filter=0x3F ehci-hcd.park=3 loglevel=0 vmalloc=0x16000000
 BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
-TARGET_KERNEL_CROSS_COMPILE_PREFIX := arm-linux-androideabi-
+# Keep the GCC toolchain used by the working 3.4 kernel.
+TARGET_KERNEL_CLANG_COMPILE := false
+TARGET_KERNEL_ADDITIONAL_FLAGS += -j16
 
 TARGET_USERIMAGES_USE_EXT4 := true
 TARGET_USERIMAGES_USE_F2FS := true
 BOARD_SUPPRESS_EMMC_WIPE := true
+
+# First-stage init switches to the read-only system root.
+# Create device mount points and legacy links while building the image.
+BOARD_ROOT_EXTRA_FOLDERS += firmware persist
+BOARD_ROOT_EXTRA_SYMLINKS += /data/tombstones:tombstones
+TARGET_FS_CONFIG_GEN := $(COMMON_PATH)/config.fs
 
 #Init
 TARGET_UNIFIED_DEVICE := true
@@ -65,9 +79,18 @@ TARGET_RECOVERY_DEVICE_MODULES := libinit_pantech
 BOARD_USES_OVERLAY 				:= true
 USE_OPENGL_RENDERER 				:= true
 TARGET_USES_ION					:= true
+TARGET_USES_C2D_COMPOSITION := true
 TARGET_DISPLAY_INSECURE_MM_HEAP 	:= true
 HAVE_ADRENO_SOURCE				:= false
 NUM_FRAMEBUFFER_SURFACE_BUFFERS := 3
+# msm8960 uses GRALLOC_USAGE_PRIVATE_NONSECURE.
+TARGET_ADDITIONAL_GRALLOC_10_USAGE_BITS := 0x02000000U
+# Legacy Adreno 320 stalls when SurfaceFlinger replaces its output each frame.
+# Reference: mako 2d0efae217ae73d57864d8f7e2e4b7ce587ddea9.
+TARGET_DISABLE_POSTRENDER_CLEANUP := true
+
+# Prima does not expose WLAN residency statistics to the power HAL.
+TARGET_HAS_NO_WLAN_STATS := true
 
 # LightHAL
 TARGET_PROVIDES_LIBLIGHT 			:= true
@@ -86,23 +109,33 @@ BLUETOOTH_HCI_USE_MCT := true
 
 # Camera
 TARGET_PROVIDES_CAMERA_HAL := true
+TARGET_HAS_LEGACY_CAMERA_HAL1 := true
 USE_DEVICE_SPECIFIC_CAMERA := true
 TARGET_USES_MEDIA_EXTENSIONS := true
+TARGET_USES_QCOM_BSP_LEGACY := true
 TARGET_NEEDS_LEGACY_CAMERA_HAL1_DYN_NATIVE_HANDLE := true
 TARGET_NEEDS_PLATFORM_TEXT_RELOCATIONS:= true
 
+# Legacy blobs require pre-Marshmallow text relocation compatibility.
+TARGET_PROCESS_SDK_VERSION_OVERRIDE := \
+    /system/bin/audioserver=22 \
+    /system/vendor/bin/hw/android.hardware.audio.service=22 \
+    /system/bin/cameraserver=22 \
+    /system/bin/mediaserver=22 \
+    /system/vendor/bin/mm-qcamera-daemon=22 \
+    /system/vendor/bin/sensors.qcom=22 \
+    /system/vendor/bin/hw/android.hardware.sensors@1.0-service=22
+
 # HIDL
+# Use the declared legacy HALs without the service lookup delay.
+PRODUCT_ENFORCE_VINTF_MANIFEST_OVERRIDE := true
 DEVICE_MANIFEST_FILE := $(COMMON_PATH)/manifest.xml
-DEVICE_MATRIX_FILE := $(COMMON_PATH)/compatibility_matrix.xml
 
 # Ril class
 BOARD_RIL_CLASS := ../../../device/pantech/msm8960-common/ril/
 
 # Preload Boot Animation
 TARGET_BOOTANIMATION_PRELOAD 		:= true
-
-# Shipping API
-PRODUCT_SHIPPING_API_LEVEL := 17
 
 # GPS
 BOARD_VENDOR_QCOM_LOC_PDK_FEATURE_SET := true
@@ -124,6 +157,7 @@ TARGET_LD_SHIM_LIBS := \
     /system/vendor/bin/mpdecision|libshims_atomic.so \
     /system/vendor/bin/sensors.qcom|libshims_sensor_poll.so \
     /system/vendor/lib/libqc-opt.so|libshims_camera.so \
+    /system/vendor/lib/hw/camera.msm8960.vendor.so|libshims_camera_parameters.so \
 
 # Init
 TARGET_NO_INITLOGO := true
@@ -135,11 +169,12 @@ BOARD_CHARGER_ENABLE_SUSPEND 		:= true
 TARGET_KEYMASTER_WAIT_FOR_QSEE := true
 
 # qcom sepolicy
-include device/qcom/sepolicy/sepolicy.mk
+include device/qcom/sepolicy-legacy/sepolicy.mk
 
-#BOARD_SEPOLICY_DIRS += \
-       device/pantech/msm8960-common/sepolicy
-       
+# Keep obsolete policy separate from the current vendor policy.
+BOARD_VENDOR_SEPOLICY_DIRS += \
+    device/pantech/msm8960-common/sepolicy/vendor
+
 # Wifi
 BOARD_HAS_QCOM_WLAN              		:= true
 BOARD_WLAN_DEVICE                		:= qcwcn

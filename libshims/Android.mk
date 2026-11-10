@@ -16,6 +16,13 @@
 LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
+LOCAL_SRC_FILES := camera_parameters.cpp
+LOCAL_MODULE := libshims_camera_parameters
+LOCAL_MODULE_TAGS := optional
+LOCAL_C_INCLUDES := $(LOCAL_PATH)/../include
+include $(BUILD_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
 LOCAL_SRC_FILES := atomic.cpp
 LOCAL_MODULE := libshims_atomic
 LOCAL_MODULE_TAGS := optional
@@ -32,6 +39,23 @@ include $(CLEAR_VARS)
 LOCAL_SRC_FILES := camera.cpp
 LOCAL_MODULE := libshims_camera
 LOCAL_MODULE_TAGS := optional
-LOCAL_C_INCLUDES := external/skia/include/core
-LOCAL_SHARED_LIBRARIES := libicuuc libskia
+LOCAL_C_INCLUDES := \
+    external/skia/include/core \
+    external/skia/include/config
+LOCAL_SHARED_LIBRARIES := libandroidicu libskia
+include $(BUILD_SHARED_LIBRARY)
+
+# The platform builds static Skia, but legacy libqc-opt needs libskia.so.
+include $(CLEAR_VARS)
+LOCAL_MODULE := libskia
+LOCAL_MULTILIB := 32
+LOCAL_WHOLE_STATIC_LIBRARIES := libskia
+# Keep in sync with external/skia's skia_deps defaults.
+LOCAL_SHARED_LIBRARIES := \
+    libEGL libGLESv2 libdng_sdk libexpat libft2 libheif \
+    libandroidicu libjpeg liblog libpiex libpng libvulkan \
+    libz libcutils libnativewindow
+LOCAL_STATIC_LIBRARIES := libarect libsfntly libwebp-decode libwebp-encode \
+    libwuffs_mirror_release_c
+LOCAL_GROUP_STATIC_LIBRARIES := true
 include $(BUILD_SHARED_LIBRARY)
