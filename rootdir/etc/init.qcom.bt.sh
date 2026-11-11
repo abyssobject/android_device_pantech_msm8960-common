@@ -51,10 +51,75 @@ failed ()
   exit $2
 }
 
+read_factory_address ()
+{
+  # sky_rawdata.h: Wi-Fi and Bluetooth occupy sectors 385 and 386.
+  # Each record has a four-byte little-endian magic followed by the address.
+  # Wi-Fi stores network byte order; Bluetooth stores little-endian BD_ADDR.
+  dd if=/dev/block/platform/msm_sdcc.1/by-name/rawdata bs=512 skip="$1" count=1 2>/dev/null |
+    od -An -tx1 -N10 | awk -v magic="$2" -v reverse="$3" '
+      NF == 10 && $1 == magic && $2 == "40" && $3 == "09" && $4 == "e2" {
+        if (reverse == 1)
+          print $10 ":" $9 ":" $8 ":" $7 ":" $6 ":" $5
+        else
+          print $5 ":" $6 ":" $7 ":" $8 ":" $9 ":" $10
+      }'
+}
+
+valid_address ()
+{
+  echo "$1" | /system/bin/grep -Eq '^[0-9A-Fa-f]{2}(:[0-9A-Fa-f]{2}){5}$' || return 1
+  case "$1" in
+    00:00:00:00:00:00|?[13579bBdDfF]:*) return 1 ;;
+  esac
+}
+
+program_wifi_address ()
+{
+  address=$(read_factory_address 385 a8 0)
+  if ! valid_address "$address"; then
+    loge "No valid factory Wi-Fi address found"
+    return 1
+  fi
+  echo "$address" > /sys/devices/platform/wcnss_wlan.0/wcnss_mac_addr || return 1
+  logi "Factory Wi-Fi address prepared for the driver"
+}
+
 program_bdaddr ()
 {
-  /system/bin/btnvtool -O
-  logi "Bluetooth Address programmed successfully"
+  /system/vendor/bin/btnvtool -O || loge "Bluetooth NV initialization failed"
+
+  # The HIDL HAL needs an address before opening the vendor library. The
+  # Qualcomm NV file starts with a BD_ADDR record (tag 1, flags 0, length 6),
+  # whose payload is little endian. Use the same address as hci_qcomm_init.
+  nv_address=$(od -An -tx1 -N9 /persist/.bt_nv.bin 2>/dev/null |
+    awk '$1 == "01" && $2 == "00" && $3 == "06" && NF == 9 {
+      print $9 ":" $8 ":" $7 ":" $6 ":" $5 ":" $4
+    }')
+  bdaddr_path=/data/misc/bluetooth/bdaddr
+  # Retain support for older installations with a textual address file.
+  for address in "$(read_factory_address 386 a7 1)" "$nv_address" "$(cat "$bdaddr_path" 2>/dev/null)" \
+      "$(cat /persist/bdaddr 2>/dev/null)"; do
+    address=$(echo "$address" | tr '.' ':' | tr -d '\r\n')
+    if ! valid_address "$address"; then
+      continue
+    fi
+    mkdir -p /data/misc/bluetooth
+    chown bluetooth:bluetooth /data/misc/bluetooth
+    chmod 0770 /data/misc/bluetooth
+    if ! echo "$address" > "$bdaddr_path.tmp"; then
+      loge "Unable to write Bluetooth address"
+      return 1
+    fi
+    chown bluetooth:bluetooth "$bdaddr_path.tmp"
+    chmod 0600 "$bdaddr_path.tmp"
+    mv "$bdaddr_path.tmp" "$bdaddr_path"
+    restorecon "$bdaddr_path"
+    logi "Bluetooth address prepared for the HAL"
+    return 0
+  done
+  loge "No valid persisted Bluetooth address found"
+  return 1
 }
 
 #
@@ -197,6 +262,7 @@ kill_hciattach ()
 logi "init.qcom.bt.sh config = $config"
 case "$config" in
     "onboot")
+        program_wifi_address
         program_bdaddr
         config_bt
         exit 0
@@ -239,7 +305,7 @@ case $STACK in
     ;;
     *)
        logi "** Bluedroid stack **"
-       setprop bluetooth.status off
+       setprop vendor.bluetooth.status off
     ;;
 esac
 
@@ -268,7 +334,14 @@ case $LE_POWER_CLASS in
      logi "LE Power Class: To override, Before turning BT ON; setprop qcom.bt.le_dev_pwr_class <1 or 2 or 3>";;
 esac
 
-eval $(/system/bin/hci_qcomm_init -e $PWR_CLASS $LE_PWR_CLASS && echo "exit_code_hci_qcomm_init=0" || echo "exit_code_hci_qcomm_init=1")
+# Program the controller with the same address supplied to the HIDL HAL.
+# hci_qcomm_init expects dot-separated octets for its explicit override.
+address=$(cat /data/misc/bluetooth/bdaddr 2>/dev/null)
+if ! valid_address "$address"; then
+  failed "No valid Bluetooth address prepared" 1
+fi
+board_address=$(echo "$address" | tr ':' '.')
+eval $(/system/vendor/bin/hci_qcomm_init -e -b "$board_address" $PWR_CLASS $LE_PWR_CLASS && echo "exit_code_hci_qcomm_init=0" || echo "exit_code_hci_qcomm_init=1")
 
 case $exit_code_hci_qcomm_init in
   0) logi "Bluetooth QSoC firmware download succeeded, $BTS_DEVICE $BTS_TYPE $BTS_BAUD $BTS_ADDRESS";;
@@ -279,7 +352,7 @@ case $exit_code_hci_qcomm_init in
          ;;
          *)
             logi "** Bluedroid stack **"
-            setprop bluetooth.status off
+            setprop vendor.bluetooth.status off
         ;;
      esac
 
@@ -298,7 +371,7 @@ case $TRANSPORT in
            ;;
            *)
               logi "** Bluedroid stack **"
-              setprop bluetooth.status on
+              setprop vendor.bluetooth.status on
            ;;
        esac
      ;;
@@ -311,7 +384,7 @@ case $TRANSPORT in
             ;;
             *)
                logi "** Bluedroid stack **"
-               setprop bluetooth.status on
+               setprop vendor.bluetooth.status on
             ;;
         esac
 

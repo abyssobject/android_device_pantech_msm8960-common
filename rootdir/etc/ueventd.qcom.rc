@@ -115,7 +115,7 @@
 /dev/msm_vidc_dec_sec     0660   system     camera
 /dev/msm_vidc_enc         0660   system     camera
 /dev/msm_rotator          0660   system     system
-/dev/hw_random            0660   system     system
+/dev/hw_random            0400   prng_seeder prng_seeder
 
 # pantech usb
 /dev/obex                 0660   system     system
@@ -198,3 +198,8 @@
 
 # FEATURE_PANTECH_SND_QSOUND
 /dev/pantech_aud_ctl*     0770   system     audio
+
+# The legacy camera daemon opens configuration nodes under /dev/msm_camera.
+subsystem msm_camera
+    devname uevent_devpath
+    dirname /dev/msm_camera

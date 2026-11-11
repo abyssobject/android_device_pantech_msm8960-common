@@ -19,6 +19,12 @@
 
 $(call inherit-product, vendor/pantech/msm8960-common/msm8960-common-vendor.mk)
 
+# Product variables must be set before BoardConfig is evaluated.
+PRODUCT_SHIPPING_API_LEVEL := 17
+
+# Preserve the pre-Treble HAL contract on Android 12.
+PRODUCT_PACKAGES += framework_compatibility_matrix.legacy.xml
+
 PRODUCT_PACKAGES += \
     camera.msm8960
 
@@ -26,16 +32,14 @@ DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
 
 # WiFi
 PRODUCT_PACKAGES += \
-    libwfcu \
     libwpa_client \
     hostapd \
     wificond \
-    wpa_supplicant
+    wpa_supplicant \
+    wpa_supplicant.conf
 
 PRODUCT_PACKAGES += \
-    android.hardware.wifi@1.0-impl \
-    android.hardware.wifi@1.0-service \
-    libwcnss_qmi \
+    android.hardware.wifi@1.0-service.legacy \
     wcnss_service
 	
 PRODUCT_COPY_FILES += \
@@ -46,9 +50,7 @@ PRODUCT_COPY_FILES += \
 	
 # Live Wallpapers
 PRODUCT_PACKAGES += \
-    LiveWallpapers \
     LiveWallpapersPicker \
-    VisualizationWallpapers \
     librs_jni
 
 # Display
@@ -56,7 +58,7 @@ PRODUCT_PACKAGES += \
     android.hardware.graphics.allocator@2.0-impl \
     android.hardware.graphics.allocator@2.0-service \
     android.hardware.graphics.mapper@2.0-impl \
-    android.hardware.graphics.composer@2.1-impl \
+    android.hardware.graphics.composer@2.1-service \
     android.hardware.memtrack@1.0-impl \
     copybit.msm8960 \
     gralloc.msm8960 \
@@ -64,12 +66,18 @@ PRODUCT_PACKAGES += \
     libgenlock \
     memtrack.msm8960
 	
+# Health
+PRODUCT_PACKAGES += \
+    android.hardware.health@2.1-impl \
+    android.hardware.health@2.1-service
+
 # Audio
 PRODUCT_PACKAGES += \
-    android.hardware.audio@2.0-impl \
-    android.hardware.audio@2.0-service \
-    android.hardware.audio.effect@2.0-impl \
-    audio.a2dp.default \
+    android.hardware.audio@6.0-impl \
+    android.hardware.audio.service \
+    android.hardware.audio.effect@6.0-impl \
+    audio.bluetooth.default \
+    android.hardware.bluetooth.audio-impl \
     audio.primary.msm8960 \
     audio.r_submix.default \
     audio.usb.default \
@@ -87,18 +95,12 @@ PRODUCT_PACKAGES += \
     libOmxVdec \
     libOmxVenc \
     libc2dcolorconvert \
-    libdivxdrmdecrypt \
     libmm-omxcore \
-    libdivxdrmdecrypt \
     libstagefrighthw
 	
-# Extended media support
-PRODUCT_PACKAGES += \
-    libextmedia_jni
 	
 # Wifi        
 PRODUCT_COPY_FILES += \
-	$(LOCAL_PATH)/wifi/wpa_supplicant.conf:$(TARGET_COPY_OUT_VENDOR)/etc/wifi/wpa_supplicant.conf \
 	$(LOCAL_PATH)/wifi/wpa_supplicant_overlay.conf:$(TARGET_COPY_OUT_VENDOR)/etc/wifi/wpa_supplicant_overlay.conf \
 	$(LOCAL_PATH)/wifi/p2p_supplicant_overlay.conf:$(TARGET_COPY_OUT_VENDOR)/etc/wifi/p2p_supplicant_overlay.conf \
 	$(LOCAL_PATH)/wifi/WCNSS_qcom_wlan_nv.bin:$(TARGET_COPY_OUT_VENDOR)/firmware/wlan/prima/WCNSS_qcom_wlan_nv.bin \
@@ -108,7 +110,6 @@ PRODUCT_COPY_FILES += \
 
 # WiFi binary
 PRODUCT_PACKAGES += \
-    libwfcu \
     wcnss_service
     
 # libxml2 is needed for camera
@@ -124,6 +125,10 @@ PRODUCT_PACKAGES += \
     android.hardware.drm@1.0-impl \
     android.hardware.drm@1.0-service
 
+# Legacy Widevine requires the protobuf ABI from Android 10.
+PRODUCT_PACKAGES += \
+    libprotobuf-cpp-lite-v29
+
 # Bluetooth
 PRODUCT_PACKAGES += \
     android.hardware.bluetooth@1.0-impl \
@@ -132,8 +137,7 @@ PRODUCT_PACKAGES += \
 
 # Configstore
 PRODUCT_PACKAGES += \
-    android.hardware.configstore@1.0-impl \
-    android.hardware.configstore@1.0-service
+    android.hardware.configstore@1.1-service
 
 #GPS
 #PRODUCT_PACKAGES += \
@@ -145,10 +149,8 @@ PRODUCT_PACKAGES += \
 	gps.msm8960
 
 PRODUCT_PACKAGES += \
-    android.hardware.gnss@1.0-impl \
-    android.hardware.gnss@1.0-service \
-    com.qualcomm.location \
-    flp.msm8960
+    android.hardware.gnss@1.0-impl.legacy \
+    android.hardware.gnss@1.0-service.legacy
 
 # GPS configuration
 PRODUCT_COPY_FILES += \
@@ -166,7 +168,7 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/mixer_paths.xml:$(TARGET_COPY_OUT_VENDOR)/etc/mixer_paths.xml
 
 PRODUCT_COPY_FILES += \
-    frameworks/av/services/audiopolicy/config/a2dp_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/a2dp_audio_policy_configuration.xml \
+    frameworks/av/services/audiopolicy/config/bluetooth_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/bluetooth_audio_policy_configuration.xml \
     frameworks/av/services/audiopolicy/config/audio_policy_volumes.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_volumes.xml \
     frameworks/av/services/audiopolicy/config/default_volume_tables.xml:$(TARGET_COPY_OUT_VENDOR)/etc/default_volume_tables.xml \
     frameworks/av/services/audiopolicy/config/r_submix_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/r_submix_audio_policy_configuration.xml \
@@ -192,7 +194,14 @@ PRODUCT_PACKAGES += \
 	init.qcom.sh \
 	ueventd.qcom.rc 
 
+# The ramdisk only needs /system; the complete fstab lives in /vendor/etc.
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/fstab.qcom:$(TARGET_COPY_OUT_RAMDISK)/fstab.qcom
+
 # Camera
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/mediaserver-permissions.xml:$(TARGET_COPY_OUT_SYSTEM)/etc/permissions/mediaserver-permissions.xml
+
 PRODUCT_PACKAGES += \
 	CE150F00.bin \
 	CE150F01.bin \
@@ -200,9 +209,8 @@ PRODUCT_PACKAGES += \
 	CE150F03_89.bin
 
 PRODUCT_PACKAGES += \
-    android.hardware.camera.provider@2.4-impl-legacy \
-    camera.device@1.0-impl-legacy \
-    Snap
+    android.hardware.camera.provider@2.4-impl \
+    camera.device@1.0-impl
 
 # Qcom scripts
 PRODUCT_PACKAGES += \
@@ -243,26 +251,14 @@ PRODUCT_PACKAGES += \
 
 # Power
 PRODUCT_PACKAGES += \
-    android.hardware.power@1.1-service-qti
+    android.hardware.power-service-qti
 
-# NFC Support
-# PRODUCT_PACKAGES += \
-    android.hardware.nfc@1.0-impl \
-    android.hardware.nfc@1.0-service \
-    nfc.msm8960 \
-    libnfc \
-    libnfc_jni \
-    Nfc \
-    Tag \
-    com.android.nfc_extras
-
-# NFC access control + feature files + configuration
-PRODUCT_COPY_FILES += \
-    frameworks/native/data/etc/android.hardware.nfc.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.nfc.xml
+# NFC stacks and feature declarations are selected by each device.
 
 # Sensors
 PRODUCT_PACKAGES += \
     android.hardware.sensors@1.0-impl \
+    android.hardware.sensors@1.0-service \
     sensors.msm8960
 
 PRODUCT_COPY_FILES += \
@@ -272,6 +268,8 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     libshims_atomic \
     libshims_camera \
+    libshims_camera_parameters \
+    libskia \
     libshims_sensor_poll
 
 # USB
@@ -284,3 +282,13 @@ PRODUCT_PACKAGES += \
     android.hardware.vibrator@1.0-service
 
 # $(call inherit-product, hardware/qcom/msm8960/msm8960.mk)
+
+# Linux 3.4 uses legacy networking and lowmemorykiller interfaces.
+PRODUCT_SYSTEM_PROPERTIES += \
+    ro.kernel.ebpf.supported=false \
+    ro.lmk.use_psi=false
+
+# libprocessgroup uses the Cgroups2 path for process groups. Mount v1
+# cpuacct there; the unavailable cgroup2 mount is optional on Linux 3.4.
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/cgroups.json:$(TARGET_COPY_OUT_VENDOR)/etc/cgroups.json
