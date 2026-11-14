@@ -292,3 +292,8 @@ PRODUCT_SYSTEM_PROPERTIES += \
 # cpuacct there; the unavailable cgroup2 mount is optional on Linux 3.4.
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/cgroups.json:$(TARGET_COPY_OUT_VENDOR)/etc/cgroups.json
+
+# Android 14 libEGL only loads /vendor/lib/egl/libEGL_<ro.hardware.egl>.so (the
+# directory scan Android 13 used as a fallback is gone); without this,
+# SurfaceFlinger aborts with "couldn't find an OpenGL ES implementation".
+PRODUCT_VENDOR_PROPERTIES += ro.hardware.egl=adreno
