@@ -56,6 +56,6 @@ LOCAL_SHARED_LIBRARIES := \
     libandroidicu libjpeg liblog libpiex libpng libvulkan \
     libz libcutils libnativewindow
 LOCAL_STATIC_LIBRARIES := libarect libsfntly libwebp-decode libwebp-encode \
-    libwuffs_mirror_release_c
+    libwuffs_mirror_release_c libperfetto_client_experimental
 LOCAL_GROUP_STATIC_LIBRARIES := true
 include $(BUILD_SHARED_LIBRARY)
