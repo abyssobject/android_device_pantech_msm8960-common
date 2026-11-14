@@ -42,9 +42,6 @@ TARGET_CPU_ABI := armeabi-v7a
 TARGET_CPU_ABI2 := armeabi
 TARGET_CPU_VARIANT := krait
 
-# Binder
-TARGET_USES_64_BIT_BINDER := true
-
 # The 3.4 kernel includes memfd_create; bypass ART's kernel version check.
 TARGET_HAS_MEMFD_BACKPORT := true
 
