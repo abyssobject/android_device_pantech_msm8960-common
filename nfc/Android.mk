@@ -26,6 +26,8 @@ LOCAL_SHARED_LIBRARIES := liblog libcutils
 LOCAL_MODULE_TAGS := optional
 LOCAL_CFLAGS += -D$(TARGET_DEVICE)
 
+# Android 14: libhardware/libcutils headers are no longer implicit
+LOCAL_HEADER_LIBRARIES += libhardware_headers libcutils_headers
 include $(BUILD_SHARED_LIBRARY)
 
 endif

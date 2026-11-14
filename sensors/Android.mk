@@ -37,6 +37,8 @@ LOCAL_SHARED_LIBRARIES := \
 
 LOCAL_STRIP_MODULE := false
 
+# Android 14: libhardware/libcutils headers are no longer implicit
+LOCAL_HEADER_LIBRARIES += libhardware_headers libcutils_headers
 include $(BUILD_SHARED_LIBRARY)
 
 include $(call all-makefiles-under, $(LOCAL_PATH))
