@@ -72,8 +72,10 @@ drm.service.enabled=true
 
 # OMX properties
 persist.media.treble_omx=false
-# The device implements legacy OMX codecs.
-debug.stagefright.ccodec=0
+# The hardware codecs are legacy OMX (media_codecs.xml). Codec2 stays enabled
+# (Android 14 default): every software codec (vorbis, mp3, aac, opus, ...) is
+# Codec2 only now; debug.stagefright.ccodec=0 left no decoder for the OGG
+# ringtones, notifications and UI sounds.
 
 # Wifi
 wifi.interface=wlan0
