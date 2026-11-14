@@ -17,10 +17,7 @@
             <instance>default</instance>
         </interface>
     </hal>
-    <hal format="aidl">
-        <name>android.hardware.bluetooth.audio</name>
-        <fqname>IBluetoothAudioProviderFactory/default</fqname>
-    </hal>
+    <!-- android.hardware.bluetooth.audio: declared by the provider's own VINTF fragment (bluetooth_audio.xml, v4 on Android 14) -->
     <hal format="hidl">
         <name>android.hardware.bluetooth</name>
         <transport>hwbinder</transport>
