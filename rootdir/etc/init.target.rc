@@ -83,7 +83,8 @@ service thermal-engine /vendor/bin/thermal-engine
    group root
    socket thermal-send-client stream 0666 system system
    socket thermal-recv-client stream 0660 system system
-   #disabled
+   # ef52: no thermal-engine blob (thermald handles thermal)
+   disabled
 
 service kickstart /system/vendor/bin/qcks -i /firmware/image/ -r /data/tombstones/mdm/
    class core

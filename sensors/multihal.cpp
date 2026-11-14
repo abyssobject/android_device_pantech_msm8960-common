@@ -677,6 +677,14 @@ static void lazy_init_sensors_list() {
             ALOGV("examining one sensor");
             const struct sensor_t *local_sensor = &subhal_sensors_list[i];
             int local_handle = local_sensor->handle;
+            if (local_sensor->vendor && !strcmp(local_sensor->vendor, "Qualcomm") &&
+                    (local_sensor->type == SENSOR_TYPE_ORIENTATION ||
+                     local_sensor->type == SENSOR_TYPE_ROTATION_VECTOR)) {
+                // ef52: broken DSPS fusion; the framework fuses these itself
+                ALOGI("ef52: leaving out %s (DSPS fusion)", local_sensor->name);
+                global_sensors_count--;
+                continue;
+            }
             memcpy(&mutable_sensor_list[mutable_sensor_index], local_sensor,
                 sizeof(struct sensor_t));
 
