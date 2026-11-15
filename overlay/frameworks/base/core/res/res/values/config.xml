@@ -296,4 +296,10 @@
         <item>"/system/framework/arm/boot-core-libart.oat"</item>
         <item>"/system/framework/arm/boot-core-libart.vdex"</item>
     </string-array>
+
+    <!-- The panel runs at 62Hz (its only mode). The AOSP default of 60 caps the
+         render rate below that, so SurfaceFlinger picks the largest divisor of
+         62Hz that fits, 31Hz, and every app animates at half rate. Let the
+         render rate follow the panel. -->
+    <integer name="config_defaultRefreshRate">62</integer>
 </resources>
