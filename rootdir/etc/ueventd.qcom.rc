@@ -25,6 +25,17 @@
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+# Cold boot: share the SELinux relabeling of /sys (some 21,500 entries, about
+# 2s for one process on this phone and most of ueventd's 3.6s cold boot,
+# which init waits for) among the uevent handler processes. The platform and
+# virtual device trees hold 14,000 of the entries, so their children are what
+# gets shared out.
+parallel_restorecon enabled
+parallel_restorecon_dir /sys
+parallel_restorecon_dir /sys/devices
+parallel_restorecon_dir /sys/devices/platform
+parallel_restorecon_dir /sys/devices/virtual
+
 # the DIAG device node is not world writable/readable.
 /dev/diag                 0660   system     diag
 
