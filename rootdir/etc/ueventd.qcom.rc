@@ -35,6 +35,8 @@ parallel_restorecon_dir /sys
 parallel_restorecon_dir /sys/devices
 parallel_restorecon_dir /sys/devices/platform
 parallel_restorecon_dir /sys/devices/virtual
+# the APEX loop devices alone took 1.36s in one process
+parallel_restorecon_dir /sys/devices/virtual/block
 
 # the DIAG device node is not world writable/readable.
 /dev/diag                 0660   system     diag
