@@ -271,8 +271,11 @@ on post-fs-data
     mkdir /data/connectivity/nsrm 0771 system system
     chown system system /data/connectivity/nsrm
     
-    # Prepare factory addresses before the radio firmware and HALs start.
-    exec_start config_bluetooth
+    # The factory Wi-Fi address must reach the driver before the WCNSS
+    # firmware loads (next line); the Bluetooth address and properties are
+    # prepared in the background, they are read only when Bluetooth turns on.
+    exec_start config_wifi_address
+    start config_bluetooth
     write /dev/wcnss_wlan 1
     write /sys/module/wcnss_ssr_8960/parameters/enable_riva_ssr 1
 
@@ -478,6 +481,12 @@ on property:ro.boot.emmc=true
 service qcom-sh /system/vendor/bin/sh /init.qcom.sh
     class late_start
     user root
+    oneshot
+
+service config_wifi_address /system/bin/sh /system/vendor/etc/init.qcom.bt.sh "onboot-wifi"
+    class core
+    user root
+    disabled
     oneshot
 
 service config_bluetooth /system/bin/sh /system/vendor/etc/init.qcom.bt.sh "onboot"

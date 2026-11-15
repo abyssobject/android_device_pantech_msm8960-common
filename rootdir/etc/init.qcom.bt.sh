@@ -261,8 +261,18 @@ kill_hciattach ()
 
 logi "init.qcom.bt.sh config = $config"
 case "$config" in
-    "onboot")
+    # Boot, step 1, waited for by init (exec_start config_wifi_address): the
+    # WCNSS driver needs the factory Wi-Fi address before init.qcom.rc loads
+    # the WCNSS firmware ("write /dev/wcnss_wlan 1").
+    "onboot-wifi")
         program_wifi_address
+        exit 0
+        ;;
+    # Boot, step 2, in the background (start config_bluetooth): the Bluetooth
+    # address file and profile properties are only read when Bluetooth is
+    # turned on, long after boot. Waiting for them (some 30 shell commands,
+    # 1.5s on this phone) held zygote, SurfaceFlinger and the boot animation.
+    "onboot")
         program_bdaddr
         config_bt
         exit 0
