@@ -53,9 +53,9 @@ BOARD_MKBOOTIMG_ARGS := --ramdisk_offset 0x2000000
 BOARD_KERNEL_IMAGE_NAME := zImage
 BOARD_KERNEL_CMDLINE := console=NULL,115200,n8 androidboot.hardware=qcom user_debug=31 msm_rtb.filter=0x3F ehci-hcd.park=3 loglevel=0 vmalloc=0x16000000
 BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
-# 1MiB kernel log: the default buffer lost the first ~9s of boot (kernel and
+# 2MiB kernel log (CONFIG_LOG_BUF_SHIFT=19 is 512KiB): the default buffer lost the first ~9s of boot (kernel and
 # first-stage init) by the time the system was up, so boot could not be timed
-BOARD_KERNEL_CMDLINE += log_buf_len=1M
+BOARD_KERNEL_CMDLINE += log_buf_len=2M
 # Keep the GCC toolchain used by the working 3.4 kernel.
 TARGET_KERNEL_CLANG_COMPILE := false
 TARGET_KERNEL_ADDITIONAL_FLAGS += -j16
