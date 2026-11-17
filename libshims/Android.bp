@@ -9,7 +9,6 @@ cc_library_shared {
     shared_libs: [
         "libEGL",
         "libGLESv2",
-        "libandroidicu",
         "libcutils",
         "liblog",
         "libnativewindow",
