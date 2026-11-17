@@ -278,6 +278,7 @@ on post-fs-data
     start config_bluetooth
     write /dev/wcnss_wlan 1
     write /sys/module/wcnss_ssr_8960/parameters/enable_riva_ssr 1
+    write /sys/module/pil_riva/parameters/enable_riva_ssr 1
 
     # Workaround for conn_init not copying the updated firmware
     rm /data/misc/wifi/WCNSS_qcom_cfg.ini
