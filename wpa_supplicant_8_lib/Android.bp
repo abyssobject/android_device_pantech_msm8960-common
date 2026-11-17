@@ -1,0 +1,44 @@
+// wpa_supplicant/hostapd private driver command library for the WCNSS (prima) WLAN.
+// Sources: AOSP hardware/qcom/wlan/legacy/qcwcn/wpa_supplicant_8_lib (Android 16). That copy
+// only has an Android.mk, and its Soong siblings live in namespaces the Soong-built
+// wpa_supplicant (root namespace) cannot see, so the library is built here.
+package {
+    default_applicable_licenses: ["device_pantech_msm8960_common_wpa_lib_license"],
+}
+
+license {
+    name: "device_pantech_msm8960_common_wpa_lib_license",
+    visibility: [":__subpackages__"],
+    license_kinds: ["SPDX-license-identifier-BSD"],
+    license_text: ["NOTICE"],
+}
+
+cc_library_static {
+    name: "lib_driver_cmd_msm8960",
+    vendor: true,
+    shared_libs: [
+        "libc",
+        "libcutils",
+        "libdl",
+        "libnl",
+    ],
+    cflags: [
+        "-DCONFIG_ANDROID_LOG",
+        "-DCONFIG_P2P",
+        "-Wall",
+        "-Werror",
+        "-Wno-unused-parameter",
+    ],
+    srcs: ["driver_cmd_nl80211.c"],
+    include_dirs: [
+        "external/libnl/include",
+        "external/wpa_supplicant_8/src",
+        "external/wpa_supplicant_8/src/ap",
+        "external/wpa_supplicant_8/src/common",
+        "external/wpa_supplicant_8/src/drivers",
+        "external/wpa_supplicant_8/src/l2_packet",
+        "external/wpa_supplicant_8/src/utils",
+        "external/wpa_supplicant_8/src/wps",
+        "external/wpa_supplicant_8/wpa_supplicant",
+    ],
+}
