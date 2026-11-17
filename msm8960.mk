@@ -266,7 +266,7 @@ PRODUCT_PACKAGES += \
     libshims_atomic \
     libshims_camera \
     libshims_camera_parameters \
-    libskia \
+    libskia_msm8960_shim \
     libshims_sensor_poll
 
 # USB

@@ -1,0 +1,24 @@
+// The camera blobs link against a shared libskia.so, which Android no longer ships
+// (libskia is a static library inside libhwui). Build one from the platform's static libskia.
+cc_library_shared {
+    name: "libskia_msm8960_shim",
+    stem: "libskia",
+    compile_multilib: "32",
+    defaults: ["skia_deps"],
+    whole_static_libs: ["libskia"],
+    shared_libs: [
+        "libEGL",
+        "libGLESv2",
+        "libandroidicu",
+        "libcutils",
+        "liblog",
+        "libnativewindow",
+        "libpng",
+        "libvulkan",
+        "libz",
+    ],
+    static_libs: [
+        "libarect",
+        "libperfetto_client_experimental",
+    ],
+}

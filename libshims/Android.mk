@@ -42,20 +42,8 @@ LOCAL_MODULE_TAGS := optional
 LOCAL_C_INCLUDES := \
     external/skia/include/core \
     external/skia/include/config
-LOCAL_SHARED_LIBRARIES := libandroidicu libskia
+LOCAL_SHARED_LIBRARIES := libandroidicu libskia_msm8960_shim
 include $(BUILD_SHARED_LIBRARY)
 
 # The platform builds static Skia, but legacy libqc-opt needs libskia.so.
-include $(CLEAR_VARS)
-LOCAL_MODULE := libskia
-LOCAL_MULTILIB := 32
-LOCAL_WHOLE_STATIC_LIBRARIES := libskia
-# Keep in sync with external/skia's skia_deps defaults.
-LOCAL_SHARED_LIBRARIES := \
-    libEGL libGLESv2 libdng_sdk libexpat libft2 libheif \
-    libandroidicu libjpeg liblog libpiex libpng libvulkan \
-    libz libcutils libnativewindow
-LOCAL_STATIC_LIBRARIES := libarect libsfntly libwebp-decode libwebp-encode \
-    libwuffs_mirror_release_c libperfetto_client_experimental
-LOCAL_GROUP_STATIC_LIBRARIES := true
-include $(BUILD_SHARED_LIBRARY)
+# libskia.so for the camera blobs is built by Soong: see Android.bp (libskia_msm8960_shim).
