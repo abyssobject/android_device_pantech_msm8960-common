@@ -49,7 +49,9 @@ TARGET_HAS_MEMFD_BACKPORT := true
 BOARD_KERNEL_BASE := 0x80200000
 BOARD_KERNEL_PAGESIZE := 2048
 BOARD_FORCE_RAMDISK_ADDRESS := 0x82200000
-BOARD_MKBOOTIMG_ARGS := --ramdisk_offset 0x2000000
+# The 2013 LK bootloader reads the original (version 0) boot image header.
+BOARD_BOOT_HEADER_VERSION := 0
+BOARD_MKBOOTIMG_ARGS := --ramdisk_offset 0x2000000 --header_version $(BOARD_BOOT_HEADER_VERSION)
 BOARD_KERNEL_IMAGE_NAME := zImage
 BOARD_KERNEL_CMDLINE := console=NULL,115200,n8 androidboot.hardware=qcom user_debug=31 msm_rtb.filter=0x3F ehci-hcd.park=3 loglevel=0 vmalloc=0x16000000
 BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
