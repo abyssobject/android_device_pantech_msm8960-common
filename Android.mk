@@ -26,7 +26,8 @@ LOCAL_MODULE_TAGS := optional
 LOCAL_VENDOR_MODULE := true
 LOCAL_MULTILIB := 32
 LOCAL_MODULE_TARGET_ARCH := arm
-LOCAL_PREBUILT_MODULE_FILE := prebuilts/vndk/v29/arm/arch-arm-armv7-a-neon/shared/vndk-core/libprotobuf-cpp-lite.so
+# Android 10 (VNDK v29) libprotobuf-cpp-lite for the RIL blobs; AOSP 16 no longer ships prebuilts/vndk/v29
+LOCAL_PREBUILT_MODULE_FILE := $(LOCAL_PATH)/prebuilt/vndk-v29/libprotobuf-cpp-lite.so
 LOCAL_STRIP_MODULE := false
 # Preserve the original VNDK SONAME while installing the versioned filename.
 LOCAL_CHECK_ELF_FILES := false
