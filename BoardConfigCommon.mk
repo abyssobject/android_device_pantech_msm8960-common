@@ -16,6 +16,9 @@
 
 COMMON_PATH := device/pantech/msm8960-common
 
+# Helpers the open-source Qualcomm HALs expect from the build system
+include $(COMMON_PATH)/qcom_glue.mk
+
 # Keep vendor-only boot properties even without split property overrides.
 TARGET_VENDOR_PROP += $(COMMON_PATH)/vendor.prop
 

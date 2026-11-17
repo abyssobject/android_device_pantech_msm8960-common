@@ -294,3 +294,9 @@ PRODUCT_COPY_FILES += \
 # directory scan Android 13 used as a fallback is gone); without this,
 # SurfaceFlinger aborts with "couldn't find an OpenGL ES implementation".
 PRODUCT_VENDOR_PROPERTIES += ro.hardware.egl=adreno
+
+# Open-source Qualcomm HALs for this platform (display, media, audio, BT, WLAN)
+PRODUCT_SOONG_NAMESPACES += \
+    hardware/qcom-caf/msm8960 \
+    hardware/qcom-caf/bt \
+    hardware/qcom-caf/wlan
