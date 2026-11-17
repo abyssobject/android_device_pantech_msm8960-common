@@ -56,9 +56,6 @@ BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
 # 2MiB kernel log (CONFIG_LOG_BUF_SHIFT=19 is 512KiB): the default buffer lost the first ~9s of boot (kernel and
 # first-stage init) by the time the system was up, so boot could not be timed
 BOARD_KERNEL_CMDLINE += log_buf_len=2M
-# Keep the GCC toolchain used by the working 3.4 kernel.
-TARGET_KERNEL_CLANG_COMPILE := false
-TARGET_KERNEL_ADDITIONAL_FLAGS += -j16
 
 TARGET_USERIMAGES_USE_EXT4 := true
 TARGET_USERIMAGES_USE_F2FS := true
@@ -168,8 +165,10 @@ BOARD_CHARGER_ENABLE_SUSPEND 		:= true
 # Enable keymaster app checking
 TARGET_KEYMASTER_WAIT_FOR_QSEE := true
 
-# qcom sepolicy
+# qcom legacy sepolicy (not part of AOSP; used when present)
+ifneq ($(wildcard device/qcom/sepolicy-legacy/sepolicy.mk),)
 include device/qcom/sepolicy-legacy/sepolicy.mk
+endif
 
 # Keep obsolete policy separate from the current vendor policy.
 BOARD_VENDOR_SEPOLICY_DIRS += \
