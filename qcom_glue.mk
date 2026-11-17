@@ -8,7 +8,7 @@
 QCOM_HAL_PATH_qcom-display   := hardware/qcom-caf/msm8960/display
 QCOM_HAL_PATH_qcom-media     := hardware/qcom-caf/msm8960/media
 QCOM_HAL_PATH_qcom-audio     := hardware/qcom-caf/msm8960/audio
-QCOM_HAL_PATH_qcom-wlan      := hardware/qcom-caf/wlan
+QCOM_HAL_PATH_qcom-wlan      := hardware/qcom/wlan/legacy
 QCOM_HAL_PATH_qcom-bt-vendor := hardware/qcom-caf/bt
 QCOM_HAL_PATH_qcom-camera    := hardware/qcom/camera
 QCOM_HAL_PATH_qcom-gps       := hardware/qcom/gps

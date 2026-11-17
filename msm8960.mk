@@ -298,5 +298,4 @@ PRODUCT_VENDOR_PROPERTIES += ro.hardware.egl=adreno
 # Open-source Qualcomm HALs for this platform (display, media, audio, BT, WLAN)
 PRODUCT_SOONG_NAMESPACES += \
     hardware/qcom-caf/msm8960 \
-    hardware/qcom-caf/bt \
-    hardware/qcom-caf/wlan
+    hardware/qcom-caf/bt
