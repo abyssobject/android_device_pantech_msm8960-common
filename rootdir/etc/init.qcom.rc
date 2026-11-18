@@ -646,6 +646,10 @@ on post-fs
 # Pantech log partition -> recovery) running for 15 more minutes.
 on early-init
     write /proc/ef52_kbootwd 900
+    # No metadata partition: aconfigd (Android 16 flag storage, read by the
+    # package manager for manifest feature flags), bootstat and vold need a
+    # writable /metadata before /system/etc/init/aconfigd.rc runs.
+    mount tmpfs tmpfs /metadata nosuid nodev noexec mode=0755,uid=0,gid=0,context=u:object_r:metadata_file:s0
 
 # Boot finished: stop the kernel watchdog (it also routes panics to recovery).
 on property:sys.boot_completed=1

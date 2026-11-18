@@ -193,3 +193,7 @@ PRODUCT_VENDOR_MOVE_ENABLED      		:= true
 WIFI_DRIVER_MODULE_NAME          		:= "wlan"
 WIFI_DRIVER_FW_PATH_STA          		:= "sta"
 WIFI_DRIVER_FW_PATH_AP           		:= "ap"
+
+# No metadata partition on this device; /metadata is a tmpfs mounted at early-init
+# (aconfig flag storage, bootstat, vold) - see init.qcom.rc.
+BOARD_ROOT_EXTRA_FOLDERS += metadata
