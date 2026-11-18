@@ -26,6 +26,8 @@ TARGET_VENDOR_PROP += $(COMMON_PATH)/vendor.prop
 -include vendor/pantech/msm8960-common/BoardConfigVendor.mk
 TARGET_SPECIFIC_HEADER_PATH 		:= device/pantech/msm8960-common/include
 TARGET_RELEASETOOLS_EXTENSIONS 		:= device/pantech/msm8960-common
+# Non-A/B device: Android 16 defaults AB_OTA_UPDATER to true when unset.
+AB_OTA_UPDATER := false
 
 BOARD_VENDOR 					:= pantech
 
