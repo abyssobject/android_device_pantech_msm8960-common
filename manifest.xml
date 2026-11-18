@@ -58,7 +58,10 @@
             <instance>default</instance>
         </interface>
     </hal>
-    <hal format="hidl">
+<!-- ef52 bring-up: GNSS HAL not declared until libloc_eng's missing
+         set_sched_policy (LineageOS LD shim, unsupported on AOSP 16) is solved;
+         a declared but dead GNSS HAL blocks system_server boot for 70 s.
+        <hal format="hidl">
         <name>android.hardware.gnss</name>
         <transport>hwbinder</transport>
         <version>1.0</version>
@@ -67,6 +70,7 @@
             <instance>default</instance>
         </interface>
     </hal>
+    -->
     <hal format="hidl">
         <name>android.hardware.graphics.allocator</name>
         <transport>hwbinder</transport>
