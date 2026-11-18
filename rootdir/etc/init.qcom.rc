@@ -637,3 +637,8 @@ service ef52_bootlog /system/bin/sh /system/etc/ef52_bootlog.sh
 
 on post-fs
     start ef52_bootlog
+
+# EF52 bring-up: the kernel got as far as second-stage init; hand over from the
+# kernel boot hang watchdog to the first-stage init one (androidboot.ef52_bootwd).
+on early-init
+    write /proc/ef52_kbootwd 0
