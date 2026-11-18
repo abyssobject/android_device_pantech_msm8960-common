@@ -321,3 +321,12 @@ PRODUCT_VENDOR_PROPERTIES += \
 PRODUCT_SYSTEM_PROPERTIES += \
     persist.zygote.app_data_isolation=false \
     persist.zygote.vold_app_data_isolation=false
+
+# Wi-Fi legacy HAL: libwifi-hal.so (vendor blob) needs libcld80211.so.
+PRODUCT_PACKAGES += \
+    libcld80211
+
+# Bring-up: keep SELinux denials out of the kernel log (logd still keeps
+# them in logcat); thousands per second were flooding dmesg.
+PRODUCT_SYSTEM_PROPERTIES += \
+    ro.logd.auditd.dmesg=false

@@ -10,6 +10,8 @@ echo $n > $D/count
 rm -f $D/boot$((n - 5))-*
 P=$D/boot$n
 cat /proc/version /proc/cmdline > $P-info.txt 2>&1
+# early kernel log (reset reason of the previous boot) before the ring buffer wraps
+dmesg | head -600 > $P-early-dmesg.txt 2>&1
 i=0
 while [ $i -lt 180 ]; do
     dmesg > $P-dmesg.txt 2>&1
