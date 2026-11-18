@@ -22,3 +22,66 @@ cc_library_shared {
         "libperfetto_client_experimental",
     ],
 }
+
+// Android 16 always uses Treble linker namespaces (the legacy single-namespace
+// ld.config that LineageOS 21 used with ro.treble.enabled=false is gone), so
+// vendor executables and sphal HALs only see /vendor/lib plus LLNDK. The
+// libraries below are vendor copies of system-only libraries that the legacy
+// blobs under /system/vendor have in DT_NEEDED.
+
+// libstdc++.so: needed by almost every blob (qseecomd, sensors.qcom,
+// mm-qcamera-daemon, gps/nfc/sensors/camera HALs, libc2d2, libadsprpc, ...).
+// bionic's libstdc++ has no vendor variant; this exports the same ABI.
+cc_library_shared {
+    name: "libstdc++_msm8960_vendor",
+    stem: "libstdc++",
+    vendor: true,
+    compile_multilib: "32",
+    srcs: ["libstdcxx.cpp"],
+    stl: "none",
+    shared_libs: ["liblog"],
+    cflags: [
+        "-Wall",
+        "-Werror",
+    ],
+}
+
+// libcamera_client.so: camera.msm8960.vendor.so (HAL1 blob, loaded in the
+// sphal namespace) uses only android::CameraParameters from it, plus the
+// Pantech CameraParameters extensions that LineageOS supplied through
+// TARGET_LD_SHIM_LIBS (unsupported by AOSP bionic). CameraParameters.cpp is
+// frameworks/av/camera/CameraParameters.cpp from android-16.0.0_r4, unchanged.
+cc_library_shared {
+    name: "libcamera_client_msm8960_vendor",
+    stem: "libcamera_client",
+    vendor: true,
+    compile_multilib: "32",
+    srcs: [
+        "CameraParameters.cpp",
+        "camera_parameters.cpp",
+    ],
+    include_dirs: [
+        "frameworks/av/camera/include",
+        "device/pantech/msm8960-common/include",
+    ],
+    header_libs: ["libsystem_headers"],
+    shared_libs: [
+        "liblog",
+        "libutils",
+    ],
+    cflags: [
+        "-Wall",
+        "-Wno-unused-parameter",
+    ],
+}
+
+// libjnigraphics.so: DT_NEEDED of libOlaEngine.so (camera HAL dependency),
+// which imports no symbols from it. libjnigraphics is a system NDK library.
+cc_library_shared {
+    name: "libjnigraphics_msm8960_vendor",
+    stem: "libjnigraphics",
+    vendor: true,
+    compile_multilib: "32",
+    srcs: ["empty.cpp"],
+    stl: "none",
+}

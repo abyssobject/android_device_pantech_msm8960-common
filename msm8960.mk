@@ -270,6 +270,14 @@ PRODUCT_PACKAGES += \
     libskia_msm8960_shim \
     libshims_sensor_poll
 
+# Vendor copies of system-only libraries the legacy /system/vendor blobs need
+# (Android 16 linker namespaces hide /system/lib from vendor and sphal).
+PRODUCT_PACKAGES += \
+    libcamera_client_msm8960_vendor \
+    libjnigraphics_msm8960_vendor \
+    libnetutils.vendor \
+    libstdc++_msm8960_vendor
+
 # USB
 PRODUCT_PACKAGES += \
     android.hardware.usb@1.0-service.basic
