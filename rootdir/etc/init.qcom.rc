@@ -638,7 +638,11 @@ service ef52_bootlog /system/bin/sh /system/etc/ef52_bootlog.sh
 on post-fs
     start ef52_bootlog
 
-# EF52 bring-up: the kernel got as far as second-stage init; hand over from the
-# kernel boot hang watchdog to the first-stage init one (androidboot.ef52_bootwd).
+# EF52 bring-up: keep the kernel boot hang watchdog (savelog mode: panic ->
+# Pantech log partition -> recovery) running for 15 more minutes.
 on early-init
+    write /proc/ef52_kbootwd 900
+
+# Boot finished: stop the kernel watchdog (it also routes panics to recovery).
+on property:sys.boot_completed=1
     write /proc/ef52_kbootwd 0
