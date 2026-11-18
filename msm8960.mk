@@ -308,3 +308,8 @@ PRODUCT_VENDOR_PROPERTIES += ro.hardware.egl=adreno
 PRODUCT_SOONG_NAMESPACES += \
     hardware/qcom-caf/msm8960 \
     hardware/qcom-caf/bt
+
+# The WCN3660 (APQ8064) controller does not know LE_GET_VENDOR_CAPABILITIES;
+# the Android 16 Bluetooth stack aborts on the unknown-opcode reply.
+PRODUCT_VENDOR_PROPERTIES += \
+    bluetooth.core.le.vendor_capabilities.enabled=false
