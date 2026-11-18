@@ -10,3 +10,10 @@
 
 # Bootloader control messages used by init, uncrypt, and recovery.
 /dev/block/platform/msm_sdcc\.1/by-name/misc    u:object_r:misc_block_device:s0
+
+# HAL services whose binaries had no exec label on Android 16 (init refuses to
+# start a service without a domain transition, even when permissive).
+/(vendor|system/vendor)/bin/hw/android\.hardware\.power-service-qti            u:object_r:hal_power_default_exec:s0
+/(vendor|system/vendor)/bin/hw/android\.hardware\.wifi@1\.0-service\.legacy    u:object_r:hal_wifi_default_exec:s0
+/(vendor|system/vendor)/bin/hw/android\.hardware\.gnss@1\.0-service\.legacy    u:object_r:hal_gnss_default_exec:s0
+/(vendor|system/vendor)/bin/thermald                                           u:object_r:thermal-engine_exec:s0

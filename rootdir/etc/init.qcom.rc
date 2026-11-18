@@ -485,12 +485,16 @@ service qcom-sh /system/vendor/bin/sh /init.qcom.sh
     oneshot
 
 service config_wifi_address /system/bin/sh /system/vendor/etc/init.qcom.bt.sh "onboot-wifi"
+    # EF52 bring-up: no vendor domain for this script yet
+    seclabel u:r:su:s0
     class core
     user root
     disabled
     oneshot
 
 service config_bluetooth /system/bin/sh /system/vendor/etc/init.qcom.bt.sh "onboot"
+    # EF52 bring-up: no vendor domain for this script yet
+    seclabel u:r:su:s0
     class core
     user root
     disabled
