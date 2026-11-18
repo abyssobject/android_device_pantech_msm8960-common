@@ -193,7 +193,8 @@ PRODUCT_PACKAGES += \
 
 # The ramdisk only needs /system; the complete fstab lives in /vendor/etc.
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/fstab.qcom:$(TARGET_COPY_OUT_RAMDISK)/fstab.qcom
+    $(LOCAL_PATH)/fstab.qcom:$(TARGET_COPY_OUT_RAMDISK)/fstab.qcom \
+    $(LOCAL_PATH)/rootdir/etc/ef52_bootlog.sh:$(TARGET_COPY_OUT_SYSTEM)/etc/ef52_bootlog.sh
 
 # Camera
 PRODUCT_COPY_FILES += \

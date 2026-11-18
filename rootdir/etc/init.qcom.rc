@@ -625,3 +625,15 @@ service fetch-swv /system/vendor/bin/fetch-swv
 
 on property:ro.baseband.fix=true
     start fetch-swv
+
+# EF52 bring-up debug: persist boot logs to /cache (readable from TWRP)
+service ef52_bootlog /system/bin/sh /system/etc/ef52_bootlog.sh
+    class core
+    user root
+    group root system log
+    seclabel u:r:su:s0
+    disabled
+    oneshot
+
+on post-fs
+    start ef52_bootlog
