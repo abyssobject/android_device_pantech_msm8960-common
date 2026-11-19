@@ -1,0 +1,8 @@
+on boot
+    chown system system /sys/class/timed_output/vibrator/enable
+    chmod 0660 /sys/class/timed_output/vibrator/enable
+
+service vendor.vibrator-msm8960 /vendor/bin/hw/android.hardware.vibrator-service.msm8960
+    class hal
+    user system
+    group system

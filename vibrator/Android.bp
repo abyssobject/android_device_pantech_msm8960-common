@@ -1,0 +1,21 @@
+// AIDL vibrator HAL for the pm8xxx-vibrator timed_output device.
+cc_binary {
+    name: "android.hardware.vibrator-service.msm8960",
+    relative_install_path: "hw",
+    vendor: true,
+    init_rc: ["android.hardware.vibrator-service.msm8960.rc"],
+    vintf_fragments: ["android.hardware.vibrator-service.msm8960.xml"],
+    srcs: [
+        "Vibrator.cpp",
+        "service.cpp",
+    ],
+    shared_libs: [
+        "libbase",
+        "libbinder_ndk",
+        "android.hardware.vibrator-V3-ndk",
+    ],
+    cflags: [
+        "-Wall",
+        "-Werror",
+    ],
+}
