@@ -8,10 +8,11 @@
     <ctl name="Voice Rx Volume" value="0" />
     <ctl name="TTY Mode" value="Off" />
     <!-- ef52 (3.10 kernel): the tabla driver routes SLIMbus RX ports through
-         SLIM RXn MUX (default ZERO); feed RX1/RX2 from AIF1 playback, as the
-         3.4 driver did implicitly, or no playback ever reaches the codec. -->
+         SLIM RXn MUX (default ZERO). AIF1 playback must feed RX1, or no
+         playback reaches the codec. RX2 is added only by the stereo paths:
+         with it on, a mono stream is sent on RX2 (139) instead of RX1. -->
     <ctl name="SLIM RX1 MUX" value="AIF1_PB" />
-    <ctl name="SLIM RX2 MUX" value="AIF1_PB" />
+    <ctl name="SLIM RX2 MUX" value="ZERO" />
     <ctl name="LINEOUT1 Volume" value="12" />
     <ctl name="LINEOUT2 Volume" value="12" />
     <ctl name="LINEOUT3 Volume" value="12" />
@@ -264,6 +265,7 @@
     </path>
 
     <path name="headphones">
+        <ctl name="SLIM RX2 MUX" value="AIF1_PB" />
         <ctl name="SLIM_0_RX Channels" value="Two" />
         <ctl name="RX1 MIX1 INP1" value="RX1" />
         <ctl name="RX1 MIX1 INP2" value="RX6" />
@@ -319,6 +321,7 @@
     </path>
 
     <path name="speaker-and-headphones">
+        <ctl name="SLIM RX2 MUX" value="AIF1_PB" />
         <path name="headphones" />
         <ctl name="RX3 MIX1 INP1" value="RX1" />
         <ctl name="RX3 MIX1 INP2" value="RX6" />
