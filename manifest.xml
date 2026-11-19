@@ -140,7 +140,9 @@
     <hal format="hidl">
         <name>android.hardware.radio</name>
         <transport>hwbinder</transport>
-        <version>1.1</version>
+        <!-- libril (hardware/ril, ef52-aosp-16) serves IRadio 1.4, the minimum Android 16
+             telephony accepts. -->
+        <version>1.4</version>
         <interface>
             <name>IRadio</name>
             <instance>slot1</instance>
