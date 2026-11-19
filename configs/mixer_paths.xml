@@ -7,6 +7,11 @@
     <ctl name="Voice Tx Mute" value="0" />
     <ctl name="Voice Rx Volume" value="0" />
     <ctl name="TTY Mode" value="Off" />
+    <!-- ef52 (3.10 kernel): the tabla driver routes SLIMbus RX ports through
+         SLIM RXn MUX (default ZERO); feed RX1/RX2 from AIF1 playback, as the
+         3.4 driver did implicitly, or no playback ever reaches the codec. -->
+    <ctl name="SLIM RX1 MUX" value="AIF1_PB" />
+    <ctl name="SLIM RX2 MUX" value="AIF1_PB" />
     <ctl name="LINEOUT1 Volume" value="12" />
     <ctl name="LINEOUT2 Volume" value="12" />
     <ctl name="LINEOUT3 Volume" value="12" />
