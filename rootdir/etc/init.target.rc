@@ -87,6 +87,10 @@ service thermal-engine /vendor/bin/thermal-engine
    disabled
 
 service kickstart /system/vendor/bin/qcks -i /firmware/image/ -r /data/tombstones/mdm/
+   # EF52 bring-up: no kickstart domain in the legacy policy; without a
+   # domain init refuses to start it and the external MDM9x15 modem stays in
+   # Sahara download mode (no qmuxd / RIL / GNSS).
+   seclabel u:r:su:s0
    class core
    oneshot
    disabled
@@ -107,6 +111,7 @@ service qseecomd /vendor/bin/qseecomd
 # Start kickstart if mdm is detected
 on property:ro.baseband=mdm
     mkdir /data/qcks 0770 system system
+    mkdir /data/tombstones/mdm 0771 system system
     start kickstart
 
 # Start up mdm_helper if sglte detected
