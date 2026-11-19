@@ -1,0 +1,22 @@
+// Minimal AIDL USB HAL: one peripheral-only micro-USB port (legacy android_usb gadget).
+cc_binary {
+    name: "android.hardware.usb-service.msm8960",
+    relative_install_path: "hw",
+    vendor: true,
+    init_rc: ["android.hardware.usb-service.msm8960.rc"],
+    vintf_fragments: ["android.hardware.usb-service.msm8960.xml"],
+    srcs: [
+        "Usb.cpp",
+        "service.cpp",
+    ],
+    shared_libs: [
+        "android.hardware.usb-V3-ndk",
+        "libbase",
+        "libbinder_ndk",
+        "liblog",
+    ],
+    cflags: [
+        "-Wall",
+        "-Werror",
+    ],
+}

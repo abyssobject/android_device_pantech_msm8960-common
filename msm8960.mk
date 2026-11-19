@@ -289,6 +289,10 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     android.hardware.vibrator-service.msm8960
 
+# USB HAL: reports the micro-USB port role so Settings > USB preferences works
+PRODUCT_PACKAGES += \
+    android.hardware.usb-service.msm8960
+
 # $(call inherit-product, hardware/qcom/msm8960/msm8960.mk)
 
 # Linux 3.4 uses legacy networking and lowmemorykiller interfaces.

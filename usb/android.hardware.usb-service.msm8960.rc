@@ -1,0 +1,4 @@
+service vendor.usb-hal-msm8960 /vendor/bin/hw/android.hardware.usb-service.msm8960
+    class hal
+    user system
+    group system
