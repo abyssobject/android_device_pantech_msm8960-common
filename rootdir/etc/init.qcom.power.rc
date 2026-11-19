@@ -84,14 +84,10 @@ on enable-low-power
     write /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq 1998000
     write /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq 1998000
     write /sys/devices/system/cpu/cpu3/cpufreq/scaling_max_freq 1998000
-    # ef52 A16 / Linux 3.10: with the screen off the CPUs hang (no oops, device
-    # dead ~20 s after screen off) once interactive drops them to 384 MHz.
-    # 918 MHz min verified stable (14+ min screen off). Revisit the 384 MHz
-    # acpuclk/L2/bus level in the kernel, then lower this again.
-    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 918000
-    write /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq 918000
-    write /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq 918000
-    write /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq 918000
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 384000
+    write /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq 384000
+    write /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq 384000
+    write /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq 384000
 
     write /sys/module/cpu_boost/parameters/boost_ms 30
     write /sys/module/cpu_boost/parameters/input_boost_ms 100
