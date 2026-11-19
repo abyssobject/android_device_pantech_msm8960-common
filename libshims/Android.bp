@@ -75,6 +75,41 @@ cc_library_shared {
     ],
 }
 
+// libskia.so, libicuuc.so, libicui18n.so: DT_NEEDED of libqc-opt.so, the
+// mm-camera frame processing library (mm-qcamera-daemon: "dlopen failed:
+// library libskia.so not found ... qcamsvr_start: mctl_load_comps failed").
+// It imports two Skia and four ICU 56 symbols and nothing from libicui18n.
+cc_library_shared {
+    name: "libskia_msm8960_vendor",
+    stem: "libskia",
+    vendor: true,
+    compile_multilib: "32",
+    srcs: ["qc_opt_skia.cpp"],
+    stl: "none",
+}
+
+cc_library_shared {
+    name: "libicuuc_msm8960_vendor",
+    stem: "libicuuc",
+    vendor: true,
+    compile_multilib: "32",
+    srcs: ["qc_opt_icu.cpp"],
+    stl: "none",
+    cflags: [
+        "-Wall",
+        "-Werror",
+    ],
+}
+
+cc_library_shared {
+    name: "libicui18n_msm8960_vendor",
+    stem: "libicui18n",
+    vendor: true,
+    compile_multilib: "32",
+    srcs: ["empty.cpp"],
+    stl: "none",
+}
+
 // libjnigraphics.so: DT_NEEDED of libOlaEngine.so (camera HAL dependency),
 // which imports no symbols from it. libjnigraphics is a system NDK library.
 cc_library_shared {

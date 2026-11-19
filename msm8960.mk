@@ -274,8 +274,11 @@ PRODUCT_PACKAGES += \
 # (Android 16 linker namespaces hide /system/lib from vendor and sphal).
 PRODUCT_PACKAGES += \
     libcamera_client_msm8960_vendor \
+    libicui18n_msm8960_vendor \
+    libicuuc_msm8960_vendor \
     libjnigraphics_msm8960_vendor \
     libnetutils.vendor \
+    libskia_msm8960_vendor \
     libstdc++_msm8960_vendor
 
 # USB
