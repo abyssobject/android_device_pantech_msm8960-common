@@ -309,7 +309,8 @@ PRODUCT_VENDOR_PROPERTIES += ro.hardware.egl=adreno
 # Open-source Qualcomm HALs for this platform (display, media, audio, BT, WLAN)
 PRODUCT_SOONG_NAMESPACES += \
     hardware/qcom-caf/msm8960 \
-    hardware/qcom-caf/bt
+    hardware/qcom-caf/bt \
+    hardware/qcom/wlan/legacy
 
 # The WCN3660 (APQ8064) controller does not know LE_GET_VENDOR_CAPABILITIES;
 # the Android 16 Bluetooth stack aborts on the unknown-opcode reply.
