@@ -329,3 +329,9 @@ PRODUCT_PACKAGES += \
 # them in logcat); thousands per second were flooding dmesg.
 PRODUCT_SYSTEM_PROPERTIES += \
     ro.logd.auditd.dmesg=false
+
+# Camera app: the HAL1 (device@1.0) cameras are only usable through the
+# camera1 API on Android 16 (no camera2 legacy shim), so ship the AOSP
+# camera1 app.
+PRODUCT_PACKAGES += \
+    LegacyCamera
