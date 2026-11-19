@@ -13,7 +13,8 @@ LOCAL_C_INCLUDES := \
 LOCAL_SHARED_LIBRARIES := \
     libdl \
     liblog \
-    libutils
+    libutils \
+    libcutils
 
 LOCAL_CFLAGS := -Wall -Werror
 

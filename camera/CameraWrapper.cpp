@@ -16,6 +16,7 @@
 
 #define LOG_TAG "PantechCameraWrapper"
 
+#include <cutils/properties.h>
 #include <atomic>
 #include <cstdint>
 #include <dlfcn.h>
@@ -371,6 +372,13 @@ int wrappedSetParameters(camera_device_t* device, const char* parameters) {
     std::string adjusted(parameters);
     constexpr const char* enabled = "recording-hint=true";
     size_t pos = adjusted.find(enabled);
+    // A16: pass the real recording hint (VFE video mode) by default; HAL1 video
+    // frames only flow in video mode. persist.camera.ef52.rec_hint=0 restores the old rewrite.
+    if (pos != std::string::npos &&
+            property_get_bool("persist.camera.ef52.rec_hint", true)) {
+        ALOGI("Passing recording-hint=true to the vendor HAL");
+        pos = std::string::npos;
+    }
     if (pos != std::string::npos) {
         adjusted.replace(pos, std::char_traits<char>::length(enabled),
                          "recording-hint=false");
