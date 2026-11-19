@@ -314,14 +314,6 @@ PRODUCT_SOONG_NAMESPACES += \
 PRODUCT_VENDOR_PROPERTIES += \
     bluetooth.core.le.vendor_capabilities.enabled=false
 
-# Zygote app data isolation (per-app bind mounts from /data_mirror) fails on
-# this device and kills direct-boot apps in the forked child ("Failed to mount
-# /data_mirror/data_de/null/0/..."), which made RescueParty reboot the phone
-# right after boot completed. Use the classic shared /data/data view.
-PRODUCT_SYSTEM_PROPERTIES += \
-    persist.zygote.app_data_isolation=false \
-    persist.zygote.vold_app_data_isolation=false
-
 # Wi-Fi legacy HAL: libwifi-hal.so (vendor blob) needs libcld80211.so.
 PRODUCT_PACKAGES += \
     libcld80211
