@@ -150,7 +150,7 @@ PRODUCT_PACKAGES += \
 
 PRODUCT_PACKAGES += \
     android.hardware.gnss@1.0-impl.legacy \
-    android.hardware.gnss@1.0-service.legacy
+    android.hardware.gnss@1.0-service.msm8960
 
 # GPS configuration
 PRODUCT_COPY_FILES += \
