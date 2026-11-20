@@ -28,6 +28,9 @@
 
 on init
     write /sys/class/android_usb/android0/f_rndis/wceis 1
+    # USB serial number = ro.serialno (persist.usb.serialno, if set, is applied
+    # by init.pantech.usb.sh, which may not read ro.serialno itself).
+    write /sys/class/android_usb/android0/iSerial ${ro.serialno}
 
 # The vendor shell runs the script in the qti_init_shell domain.
 service pantech-usb-sh /system/vendor/bin/sh /init.pantech.usb.sh

@@ -1,0 +1,8 @@
+# Linux 3.10 does not apply genfscon to sysfs, so the queue attributes of the
+# loop and dm devices apexd creates (read_ahead_kb, scheduler, nr_requests)
+# carry the generic "sysfs" label until ueventd has handled their uevent and
+# restored the sysfs_loop/sysfs_dm labels - but apexd configures them right
+# after creating the device (apexd-bootstrap even runs before ueventd's
+# coldboot has finished). A failed read_ahead_kb write aborts APEX activation
+# and reboots the device ("bootstrap-apexd-failed").
+allow apexd sysfs:file { getattr open read write };

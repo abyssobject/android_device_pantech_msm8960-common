@@ -26,6 +26,3 @@ get_prop(surfaceflinger, boot_animation_prop)
 
 # --- vold: read-ahead of the eMMC queue ---
 allow vold sysfs_mmc_host:file w_file_perms;
-
-# --- kernel: block I/O on the rawdata partition read by init.qcom.bt.sh ---
-allow kernel ef52_rawdata_block_device:blk_file r_file_perms;

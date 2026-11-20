@@ -30,8 +30,16 @@
 on early-init
     mount debugfs debugfs /sys/kernel/debug
     # 3.10 debugfs ignores genfscon paths: label the nodes the platform uses.
-    restorecon_recursive /sys/kernel/debug/tracing
+    restorecon /sys/kernel/debug/tracing
+    restorecon /sys/kernel/debug/tracing/trace_marker
+    restorecon /sys/kernel/debug/tracing/tracing_on
+    restorecon /sys/kernel/debug/tracing/trace
     restorecon /sys/kernel/debug/wakeup_sources
+
+# The rest of the tracing tree (atrace/perfetto controls, ~3400 nodes, 1.4 s)
+# is labelled once boot has finished instead of blocking early-init.
+on property:sys.boot_completed=1
+    restorecon_recursive /sys/kernel/debug/tracing
 
 on early-boot
     start timekeep

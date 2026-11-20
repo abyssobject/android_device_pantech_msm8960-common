@@ -6,3 +6,8 @@
 # panics a healthy system once its timeout expires.
 allow kernel domain:dir search;
 allow kernel domain:file { getattr open read };
+
+# A Pantech kernel driver reads the factory "rawdata" partition by path from a
+# kworker (/dev/block/mmcblk0p12).
+allow kernel block_device:dir search;
+allow kernel ef52_rawdata_block_device:blk_file r_file_perms;

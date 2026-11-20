@@ -33,7 +33,7 @@
 # do not have unique serial number.
 # User needs to set unique usb serial number to persist.usb.serialno
 #
-# ef52: the ro.serialno fallback is written by the platform init.usb.rc
+# ef52: the ro.serialno default is written by init.pantech.usb.rc
 # ("write .../iSerial ${ro.serialno}"); the vendor script may not read it.
 serialno=`getprop persist.usb.serialno`
 case "$serialno" in

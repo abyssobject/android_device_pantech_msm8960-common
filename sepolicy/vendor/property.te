@@ -1,5 +1,9 @@
 # See property_contexts.
 vendor_internal_prop(vendor_ef52_audio_prop)
+# ro.vega.* audio switches and vendor.rild.lib{path,args} come from
+# /vendor/build.prop, which init loads with the vendor_init context.
+set_prop(vendor_init, vendor_ef52_audio_prop)
+set_prop(vendor_init, vendor_rild_libpath_prop)
 vendor_internal_prop(vendor_ef52_display_prop)
 vendor_internal_prop(vendor_ef52_data_prop)
 vendor_internal_prop(vendor_ef52_ril_prop)
