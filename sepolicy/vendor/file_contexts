@@ -20,3 +20,111 @@
 /(vendor|system/vendor)/bin/hw/android\.hardware\.vibrator-service\.msm8960    u:object_r:hal_vibrator_default_exec:s0
 /(vendor|system/vendor)/bin/thermald                                           u:object_r:thermal-engine_exec:s0
 /(vendor|system/vendor)/bin/hw/android\.hardware\.usb-service\.msm8960       u:object_r:hal_usb_default_exec:s0
+
+# Daemons that ran in the "su" domain during bring-up.
+# External MDM9x15 boot/EFS sync over HSIC (qcks -> efsks -> ks).
+/(vendor|system/vendor)/bin/qcks                u:object_r:mdm_helper_exec:s0
+/(vendor|system/vendor)/bin/efsks               u:object_r:mdm_helper_exec:s0
+/(vendor|system/vendor)/bin/qrngd               u:object_r:qrngd_exec:s0
+# awk for vendor scripts (one-true-awk vendor variant)
+/(vendor|system/vendor)/bin/awk                 u:object_r:vendor_toolbox_exec:s0
+
+# The odm directory lives inside /system/vendor on this device; the platform
+# patterns only cover /odm and /vendor/odm.
+/system/vendor/odm(/.*)?                        u:object_r:vendor_file:s0
+/system/vendor/odm/etc(/.*)?                    u:object_r:vendor_configs_file:s0
+/system/vendor/odm/etc/selinux/odm_sepolicy\.cil          u:object_r:sepolicy_file:s0
+/system/vendor/odm/etc/selinux/odm_file_contexts          u:object_r:file_contexts_file:s0
+/system/vendor/odm/etc/selinux/odm_seapp_contexts         u:object_r:seapp_contexts_file:s0
+/system/vendor/odm/etc/selinux/odm_property_contexts      u:object_r:property_contexts_file:s0
+/system/vendor/odm/etc/selinux/odm_service_contexts       u:object_r:vendor_service_contexts_file:s0
+/system/vendor/odm/etc/selinux/odm_hwservice_contexts     u:object_r:hwservice_contexts_file:s0
+/system/vendor/odm/etc/selinux/odm_keystore2_key_contexts u:object_r:keystore2_key_contexts_file:s0
+/system/vendor/odm/etc/selinux/odm_mac_permissions\.xml   u:object_r:mac_perms_file:s0
+/system/vendor/odm/etc/selinux/odm_tee_service_contexts   u:object_r:tee_service_contexts_file:s0
+
+# Vendor libraries loaded into platform processes (same-process HALs):
+# gralloc/mapper (every graphics client), Adreno shader compiler, memtrack
+# (system_server) and the HAL1 camera stack, which runs inside cameraserver
+# through the legacy camera provider.
+/(vendor|system/vendor)/lib/hw/gralloc\.msm8960\.so                         u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/hw/memtrack\.msm8960\.so                        u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/hw/android\.hardware\.memtrack@1\.0-impl\.so    u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/hw/power\.default\.so                           u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/hw/camera\.msm8960(\.vendor)?\.so               u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/hw/android\.hardware\.camera\.provider@2\.4-impl\.so u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/android\.hardware\.camera\.[a-z]+@[0-9.]+(-[a-z]+)?\.so u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/camera\.device@[0-9.]+(-external)?-impl\.so     u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/android\.hardware\.graphics\.allocator@[234]\.0\.so u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/android\.hardware\.memtrack@1\.0\.so            u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/android\.hidl\.allocator@1\.0\.so               u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/libsc-a3xx\.so                 u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/libmemalloc\.so                u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/libgenlock\.so                 u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/libui\.so                      u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/libbinder\.so                  u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/libfmq\.so                     u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/libstdc\+\+\.so                u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/libtinyxml2\.so                u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/libjnigraphics\.so             u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/libexif\.so                    u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/libjpeg\.so                    u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/libyuv\.so                     u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/libcamera_client\.so           u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/libcamera_metadata\.so         u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/libmmcamera_interface\.so      u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/libmmjpeg(_interface)?\.so     u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/libmmstillomx\.so              u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/libmmipl\.so                   u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/libimage-(jpeg-enc-omx-comp|omx-common)\.so u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/libgemini\.so                  u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/libmercury\.so                 u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/libOlaEngine\.so               u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/libVDFaceAPI\.so               u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/libmorpho_easy_hdr\.so         u:object_r:same_process_hal_file:s0
+
+# Devices
+/dev/gemini0                                    u:object_r:video_device:s0
+/dev/block/platform/msm_sdcc\.1/by-name/m9kefs[123]  u:object_r:efs_boot_dev:s0
+/dev/block/platform/msm_sdcc\.1/by-name/rawdata u:object_r:ef52_rawdata_block_device:s0
+
+# sysfs (see file.te: labelled by ueventd's restorecon, not by genfscon)
+/sys/devices/system/cpu(/.*)?                                       u:object_r:sysfs_devices_system_cpu:s0
+/sys/devices/platform/kgsl-3d0\.0/kgsl/kgsl-3d0/[^/]+               u:object_r:sysfs_gpu:s0
+/sys/devices/platform/msm_ssbi\.0/pm8921-core/smb347_charger/power_supply(/.*)? u:object_r:sysfs_batteryinfo:s0
+/sys/devices/platform/msm_ssbi\.0/pm8921-core/pm8xxx-led(/.*)?      u:object_r:sysfs_leds:s0
+/sys/devices/platform/msm_fb\.[0-9]+/leds(/.*)?                     u:object_r:sysfs_leds:s0
+/sys/devices/platform/msm_ssbi\.0/pm8921-core/pm8xxx-vib/amp        u:object_r:sysfs_vibrator:s0
+/sys/devices/virtual/timed_output/vibrator(/.*)?                    u:object_r:sysfs_vibrator:s0
+/sys/devices/virtual/android_usb(/.*)?                              u:object_r:sysfs_android_usb:s0
+/sys/devices/virtual/graphics/fb[0-9]+(/.*)?                        u:object_r:sysfs_graphics:s0
+/sys/devices/virtual/block/zram0(/.*)?                              u:object_r:sysfs_zram:s0
+/sys/devices/virtual/block/zram0/uevent                             u:object_r:sysfs_zram_uevent:s0
+/sys/devices/virtual/switch(/.*)?                                   u:object_r:sysfs_switch:s0
+/sys/kernel/ipv4(/.*)?                                              u:object_r:sysfs_ipv4:s0
+/sys/devices/virtual/block/loop[0-9]+(/.*)?                         u:object_r:sysfs_loop:s0
+/sys/devices/platform/msm_sdcc\.1/mmc_host/mmc0/mmc0:[0-9a-f]+/block/mmcblk0/(queue|bdi)(/.*)? u:object_r:sysfs_mmc_host:s0
+/sys/power/state                                                    u:object_r:sysfs_power:s0
+/sys/power/wakeup_count                                             u:object_r:sysfs_power:s0
+/sys/power/wake_lock                                                u:object_r:sysfs_wake_lock:s0
+/sys/power/wake_unlock                                              u:object_r:sysfs_wake_lock:s0
+/sys/module/lowmemorykiller/parameters(/.*)?                        u:object_r:sysfs_lowmemorykiller:s0
+/sys/module/wlan/parameters/fwpath                                  u:object_r:sysfs_wlan_fwpath:s0
+/sys/module/(pm_8x60|rpm_resources|cpu_boost|msm_thermal)(/.*)?     u:object_r:sysfs_ef52_pm:s0
+/sys/kernel/(autosmp|msm_mpdecision|cpufreq_limit|fast_charge)(/.*)? u:object_r:sysfs_ef52_pm:s0
+/sys/devices/platform/msm_sdcc\.[1-4]/(polling|idle_timeout)        u:object_r:sysfs_ef52_pm:s0
+/sys/module/(bluetooth_power|hci_smd|sco)/parameters(/.*)?          u:object_r:sysfs_ef52_bt:s0
+/sys/devices/platform/msm_serial_hs\.0/clock                        u:object_r:sysfs_ef52_bt:s0
+/sys/devices/virtual/bluetooth/hci[0-9]+/idle_timeout               u:object_r:sysfs_ef52_bt:s0
+/sys/devices/platform/wcnss_wlan\.0/(serial_number|wcnss_mac_addr)  u:object_r:sysfs_ef52_wcnss:s0
+/sys/module/(subsystem_restart|mdm_common|pil_riva|wcnss_ssr_8960|rmnet_usb)/parameters(/.*)? u:object_r:sysfs_ef52_modem:s0
+/sys/devices/i2c-3/3-0024/cyttsp_update_fw                          u:object_r:sysfs_ef52_touch:s0
+/sys/devices/i2c-3/3-005b/update_fw                                 u:object_r:sysfs_ef52_touch:s0
+
+# debugfs (restorecon in init.target.rc after the mount; mirrors the platform
+# genfs_contexts for debugfs)
+/sys/kernel/debug/tracing(/.*)?                 u:object_r:debugfs_tracing_debug:s0
+/sys/kernel/debug/tracing/instances(/.*)?       u:object_r:debugfs_tracing_instances:s0
+/sys/kernel/debug/tracing/printk_formats        u:object_r:debugfs_tracing_printk_formats:s0
+/sys/kernel/debug/tracing/trace_marker          u:object_r:debugfs_trace_marker:s0
+/sys/kernel/debug/wakeup_sources                u:object_r:debugfs_wakeup_sources:s0

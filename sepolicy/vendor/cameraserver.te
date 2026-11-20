@@ -1,0 +1,9 @@
+# The HAL1 camera (camera.msm8960 + mm-camera) runs inside cameraserver through
+# the legacy camera provider; it talks to mm-qcamera-daemon over
+# /data/cam_socket*, and drives the msm_camera V4L2 nodes and the Gemini JPEG
+# engine directly.
+allow cameraserver camera_socket:sock_file write;
+allow cameraserver video_device:dir r_dir_perms;
+allow cameraserver video_device:chr_file rw_file_perms;
+# libmmjpeg.so (prebuilt blob) has text relocations.
+allow cameraserver same_process_hal_file:file execmod;

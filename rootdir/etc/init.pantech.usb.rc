@@ -29,9 +29,8 @@
 on init
     write /sys/class/android_usb/android0/f_rndis/wceis 1
 
-service pantech-usb-sh /system/bin/sh /init.pantech.usb.sh
-    # EF52 bring-up: no vendor domain for this script yet
-    seclabel u:r:su:s0
+# The vendor shell runs the script in the qti_init_shell domain.
+service pantech-usb-sh /system/vendor/bin/sh /init.pantech.usb.sh
     class core
     user root
     oneshot

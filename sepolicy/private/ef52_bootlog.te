@@ -1,0 +1,31 @@
+# ef52_bootlog: bring-up debug service (init.qcom.rc). For 15 minutes after
+# every boot it copies the kernel log, logcat, properties and the process
+# list to /cache/ef52-bootlog, so a boot that never reaches adb can still be
+# diagnosed from TWRP. Started from post-fs; read-only towards the system.
+type ef52_bootlog, domain, coredomain, mlstrustedsubject;
+type ef52_bootlog_exec, system_file_type, exec_type, file_type;
+
+init_daemon_domain(ef52_bootlog)
+
+allow ef52_bootlog shell_exec:file rx_file_perms;
+allow ef52_bootlog toolbox_exec:file rx_file_perms;
+allow ef52_bootlog logcat_exec:file rx_file_perms;
+
+# dmesg (/dev/kmsg), logcat -d -b all
+allow ef52_bootlog kernel:system syslog_read;
+allow ef52_bootlog kmsg_device:chr_file r_file_perms;
+read_logd(ef52_bootlog)
+
+# /proc/version, /proc/cmdline, ps -A (ps does not need the ptrace-only fields)
+allow ef52_bootlog proc_version:file r_file_perms;
+allow ef52_bootlog proc_cmdline:file r_file_perms;
+allow ef52_bootlog proc_pid_max:file r_file_perms;
+r_dir_file(ef52_bootlog, domain)
+dontaudit ef52_bootlog self:global_capability_class_set sys_ptrace;
+
+# getprop (dump of every property)
+allow ef52_bootlog property_type:file r_file_perms;
+
+# /cache/ef52-bootlog
+allow ef52_bootlog cache_file:dir create_dir_perms;
+allow ef52_bootlog cache_file:file create_file_perms;

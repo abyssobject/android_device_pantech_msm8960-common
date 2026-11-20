@@ -1,0 +1,3 @@
+# procfs paths are labelled by genfscon on the 3.10 kernel (sysfs/debugfs are not).
+genfscon proc /ef52_kbootwd        u:object_r:proc_ef52_kbootwd:s0
+genfscon proc /sys/vm/swappiness   u:object_r:proc_ef52_vm:s0

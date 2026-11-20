@@ -1,0 +1,26 @@
+# Vendor shell scripts started by init through /system/vendor/bin/sh
+# (domain_auto_trans in the qcom policy): init.qcom.sh, init.pantech.usb.sh and
+# the boot-time modes of init.qcom.bt.sh (factory Wi-Fi/BT addresses).
+allow qti_init_shell toolbox_exec:file rx_file_perms;
+get_prop(qti_init_shell, vendor_ef52_bt_prop)
+get_prop(qti_init_shell, vendor_ef52_data_prop)
+get_prop(qti_init_shell, vendor_ef52_ril_prop)
+get_prop(qti_init_shell, vendor_ef52_usb_prop)
+get_prop(qti_init_shell, vendor_ef52_gnss_prop)
+get_prop(qti_init_shell, serialno_prop)
+
+# init.qcom.sh: rmnet_usb data channel setup
+allow qti_init_shell sysfs_ef52_modem:file w_file_perms;
+
+# init.qcom.bt.sh onboot / onboot-wifi
+allow qti_init_shell block_device:dir search;
+allow qti_init_shell ef52_rawdata_block_device:blk_file r_file_perms;
+allow qti_init_shell sysfs_ef52_wcnss:file w_file_perms;
+allow qti_init_shell btnvtool_exec:file rx_file_perms;
+allow qti_init_shell bluetooth_data_file:dir create_dir_perms;
+allow qti_init_shell bluetooth_data_file:file create_file_perms;
+allow qti_init_shell file_contexts_file:file r_file_perms;
+
+# init.pantech.usb.sh: USB serial number / function setup
+allow qti_init_shell sysfs_android_usb:dir r_dir_perms;
+allow qti_init_shell sysfs_android_usb:file rw_file_perms;

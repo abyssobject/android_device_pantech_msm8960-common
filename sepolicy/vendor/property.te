@@ -1,0 +1,19 @@
+# See property_contexts.
+vendor_internal_prop(vendor_ef52_audio_prop)
+vendor_internal_prop(vendor_ef52_display_prop)
+vendor_internal_prop(vendor_ef52_data_prop)
+vendor_internal_prop(vendor_ef52_ril_prop)
+vendor_internal_prop(vendor_ef52_media_prop)
+vendor_internal_prop(vendor_ef52_sensors_prop)
+vendor_internal_prop(vendor_ef52_bt_prop)
+vendor_internal_prop(vendor_ef52_usb_prop)
+vendor_internal_prop(vendor_ef52_gnss_prop)
+
+# Tunables of the same-process gralloc (read in every process that maps
+# graphics buffers, platform and vendor).
+vendor_public_prop(vendor_ef52_gralloc_prop)
+get_prop(domain, vendor_ef52_gralloc_prop)
+
+# Camera HAL tunables; the HAL1 stack runs inside cameraserver.
+vendor_public_prop(vendor_ef52_camera_prop)
+get_prop(cameraserver, vendor_ef52_camera_prop)

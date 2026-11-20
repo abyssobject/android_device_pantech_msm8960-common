@@ -1,0 +1,11 @@
+# kickstart (qcks) boots the external MDM9x15 over HSIC and keeps its EFS in
+# sync (efsks/ks child processes), using the qcom mdm_helper domain.
+allow mdm_helper mdm_helper_exec:file execute_no_trans;
+allow mdm_helper firmware_file:dir r_dir_perms;
+allow mdm_helper firmware_file:file r_file_perms;
+allow mdm_helper { ksbridgehsic_device efsbridgehsic_device }:chr_file rw_file_perms;
+allow mdm_helper efs_boot_dev:blk_file rw_file_perms;
+allow mdm_helper block_device:dir search;
+allow mdm_helper tombstone_data_file:dir rw_dir_perms;
+allow mdm_helper tombstone_data_file:file create_file_perms;
+get_prop(mdm_helper, vendor_ef52_ril_prop)

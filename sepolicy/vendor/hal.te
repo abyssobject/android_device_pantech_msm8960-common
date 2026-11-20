@@ -1,0 +1,38 @@
+# --- Audio HAL ---
+get_prop(hal_audio_default, vendor_ef52_audio_prop)
+# libacdbloader.so (prebuilt blob) has text relocations.
+allow hal_audio_default vendor_file:file execmod;
+
+# --- Graphics ---
+# gralloc0 maps the framebuffer.
+allow hal_graphics_allocator_default graphics_device:dir search;
+allow hal_graphics_allocator_default graphics_device:chr_file rw_file_perms;
+# HWC 2.1 passthrough allocates through the allocator HAL.
+hal_client_domain(hal_graphics_composer_default, hal_graphics_allocator)
+get_prop(hal_graphics_composer_default, vendor_ef52_display_prop)
+
+# --- Power HAL: interactive governor boost / governor switch, display idle ---
+allow hal_power_default sysfs_devices_system_cpu:dir r_dir_perms;
+allow hal_power_default sysfs_devices_system_cpu:file rw_file_perms;
+r_dir_file(hal_power_default, sysfs_graphics)
+
+# --- Sensors HAL (libsensor1 client of sensors.qcom) ---
+set_prop(hal_sensors_default, vendor_ef52_sensors_prop)
+# /data/system/sensors/settings (sensors enable switch shared with sensors.qcom)
+allow hal_sensors_default sensors_data_file:dir r_dir_perms;
+allow hal_sensors_default sensors_data_file:file r_file_perms;
+# libsensor1.so (prebuilt blob) has text relocations.
+allow hal_sensors_default vendor_file:file execmod;
+
+# --- Bluetooth HAL (libbt-vendor reads qcom.bluetooth.soc) ---
+get_prop(hal_bluetooth_default, vendor_ef52_bt_prop)
+
+# --- USB HAL: charger type / USB online ---
+r_dir_file(hal_usb_default, sysfs_batteryinfo)
+
+# --- GNSS ---
+get_prop(hal_gnss_default, vendor_ef52_gnss_prop)
+
+# --- OMX (mediacodec): encoder/decoder tuning, camera recording hints ---
+get_prop(mediacodec, vendor_ef52_media_prop)
+get_prop(mediacodec, camera_prop)

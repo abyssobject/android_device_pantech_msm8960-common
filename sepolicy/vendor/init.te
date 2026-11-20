@@ -1,0 +1,34 @@
+# The device init scripts (/init.*.rc) run in the init domain and tune
+# platform knobs that have vendor labels (see file_contexts).
+allow init {
+    sysfs_ef52_pm
+    sysfs_ef52_bt
+    sysfs_ef52_wcnss
+    sysfs_ef52_modem
+    sysfs_ef52_touch
+    sysfs_gpu
+    sysfs_graphics
+    sysfs_wlan_fwpath
+    sysfs_hsic_modem_wait
+    sysfs_thermal
+    sysfs_mmc_host
+    sysfs_devices_system_cpu
+}:file { w_file_perms setattr };
+allow init {
+    sysfs_android_usb
+    sysfs_leds
+    sysfs_vibrator
+    sysfs_lowmemorykiller
+    sysfs_ipv4
+}:file setattr;
+# chown/chmod through the "device" and "lun" links of these class devices.
+allow init { sysfs_android_usb sysfs_leds }:lnk_file read;
+
+allow init proc_ef52_kbootwd:file w_file_perms;
+allow init proc_ef52_vm:file w_file_perms;
+
+# write /dev/wcnss_wlan 1: start the Riva Wi-Fi/BT subsystem.
+allow init wcnss_device:chr_file w_file_perms;
+
+# tmpfs mounted on /data/qcks (MDM EFS images from kickstart).
+allow init efs_data_file:dir mounton;

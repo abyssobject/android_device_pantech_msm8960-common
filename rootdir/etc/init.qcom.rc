@@ -194,9 +194,6 @@ on boot
     #For bridgemgr daemon to inform the USB driver of the correct transport
     chown radio radio /sys/class/android_usb/f_rmnet_smd_sdio/transport
 
-    #20140521 DS1 p16637 fix EF52L_KK PLM 00216 (EF51, EF52 JB -> KK)
-    chmod 0704 /data/data/com.android.settings/files/holddef.png
-
 #   Define TCP buffer sizes for various networks
 #   ReadMin, ReadInitial, ReadMax, WriteMin, WriteInitial, WriteMax,
     setprop net.tcp.buffersize.default 4096,87380,110208,4096,16384,110208
@@ -341,6 +338,7 @@ on post-fs-data
     # kickstart
     mkdir /data/qcks 0770 system system
     mount tmpfs tmpfs /data/qcks size=20m,mode=0750,gid=1000
+    restorecon /data/qcks
     chown system /dev/block/platform/msm_sdcc.1/by-name
     
     # communicate with mpdecision and thermald
@@ -484,23 +482,20 @@ service qcom-sh /system/vendor/bin/sh /init.qcom.sh
     user root
     oneshot
 
-service config_wifi_address /system/bin/sh /system/vendor/etc/init.qcom.bt.sh "onboot-wifi"
-    # EF52 bring-up: no vendor domain for this script yet
-    seclabel u:r:su:s0
+# The vendor shell runs these scripts in the qti_init_shell domain.
+service config_wifi_address /system/vendor/bin/sh /system/vendor/etc/init.qcom.bt.sh "onboot-wifi"
     class core
     user root
     disabled
     oneshot
 
-service config_bluetooth /system/bin/sh /system/vendor/etc/init.qcom.bt.sh "onboot"
-    # EF52 bring-up: no vendor domain for this script yet
-    seclabel u:r:su:s0
+service config_bluetooth /system/vendor/bin/sh /system/vendor/etc/init.qcom.bt.sh "onboot"
     class core
     user root
     disabled
     oneshot
 
-service hciattach /system/bin/sh /system/vendor/etc/init.qcom.bt.sh
+service hciattach /system/vendor/bin/sh /system/vendor/etc/init.qcom.bt.sh
     class late_start
     user bluetooth
     group bluetooth net_bt_admin system
@@ -631,11 +626,10 @@ on property:ro.baseband.fix=true
     start fetch-swv
 
 # EF52 bring-up debug: persist boot logs to /cache (readable from TWRP)
-service ef52_bootlog /system/bin/sh /system/etc/ef52_bootlog.sh
+service ef52_bootlog /system/bin/ef52_bootlog.sh
     class core
     user root
-    group root system log
-    seclabel u:r:su:s0
+    group root system log cache
     disabled
     oneshot
 
@@ -649,7 +643,10 @@ on early-init
     # No metadata partition: aconfigd (Android 16 flag storage, read by the
     # package manager for manifest feature flags), bootstat and vold need a
     # writable /metadata before /system/etc/init/aconfigd.rc runs.
-    mount tmpfs tmpfs /metadata nosuid nodev noexec mode=0755,uid=0,gid=0,context=u:object_r:metadata_file:s0
+    # Labelled per file (not context=), so the platform types of /metadata/apex,
+    # /metadata/aconfig, /metadata/gsi... apply as on a real metadata partition.
+    mount tmpfs tmpfs /metadata nosuid nodev noexec mode=0755,uid=0,gid=0
+    restorecon /metadata
 
 # Boot finished: stop the kernel watchdog (it also routes panics to recovery).
 on property:sys.boot_completed=1

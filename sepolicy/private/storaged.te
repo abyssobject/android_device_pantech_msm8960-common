@@ -1,0 +1,3 @@
+# storaged probes /sys/block/mmcblk0/stat; the platform policy has no label
+# for it since Android 16 (disk stats come from the health HAL instead).
+dontaudit storaged sysfs:file r_file_perms;

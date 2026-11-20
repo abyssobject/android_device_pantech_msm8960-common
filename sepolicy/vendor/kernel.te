@@ -1,0 +1,8 @@
+# ef52 boot hang watchdog (system/core init/first_stage_init.cpp,
+# androidboot.ef52_bootwd=): first-stage init forks it before the policy is
+# loaded, so it stays in the kernel domain. It polls /proc/<pid>/cmdline of
+# every process until SystemUI runs and, on a hang, logs stat/wchan/cmdline of
+# every task before panicking. Without these reads it never sees SystemUI and
+# panics a healthy system once its timeout expires.
+allow kernel domain:dir search;
+allow kernel domain:file { getattr open read };

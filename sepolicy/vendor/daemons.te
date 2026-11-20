@@ -1,0 +1,31 @@
+# --- sensors.qcom (DSPS sensor daemon) ---
+get_prop(sensors, vendor_ef52_sensors_prop)
+allow sensors sysfs_wake_lock:file rw_file_perms;
+# sensors.qcom (prebuilt blob) has text relocations.
+allow sensors sensors_exec:file execmod;
+
+# --- mm-qcamera-daemon ---
+# libmmjpeg.so (prebuilt blob, same_process_hal_file) has text relocations.
+allow mm-qcamerad same_process_hal_file:file execmod;
+
+# --- netmgrd (runs as root, manages radio-owned sockets/dirs) ---
+get_prop(netmgrd, vendor_ef52_data_prop)
+allow netmgrd self:global_capability_class_set dac_override;
+
+# --- qmuxd / thermald: QMI log mask ---
+get_prop(qmuxd, vendor_ef52_data_prop)
+get_prop(thermal-engine, vendor_ef52_data_prop)
+
+# --- RIL ---
+get_prop(rild, vendor_rild_libpath_prop)
+get_prop(rild, vendor_ef52_data_prop)
+set_prop(rild, vendor_ef52_ril_prop)
+
+# --- surfaceflinger: debug.sf.nobootanimation (qcom context) ---
+get_prop(surfaceflinger, boot_animation_prop)
+
+# --- vold: read-ahead of the eMMC queue ---
+allow vold sysfs_mmc_host:file w_file_perms;
+
+# --- kernel: block I/O on the rawdata partition read by init.qcom.bt.sh ---
+allow kernel ef52_rawdata_block_device:blk_file r_file_perms;

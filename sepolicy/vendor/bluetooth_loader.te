@@ -1,0 +1,7 @@
+# hciattach: /system/vendor/etc/init.qcom.bt.sh run by the vendor shell
+# (seclabel in init.qcom.rc).
+allow bluetooth_loader vendor_shell_exec:file { entrypoint rx_file_perms };
+get_prop(bluetooth_loader, vendor_ef52_bt_prop)
+allow bluetooth_loader bluetooth_data_file:dir search;
+allow bluetooth_loader bluetooth_data_file:file r_file_perms;
+allow bluetooth_loader sysfs_ef52_bt:file rw_file_perms;

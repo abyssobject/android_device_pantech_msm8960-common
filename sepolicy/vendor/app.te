@@ -1,0 +1,3 @@
+# ART's JIT re-opens its memfd ("jit-cache") through /proc/self/fd on this
+# kernel (memfd_create is a backport without F_SEAL_FUTURE_WRITE).
+allow appdomain appdomain_tmpfs:file open;

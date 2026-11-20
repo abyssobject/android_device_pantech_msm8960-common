@@ -59,7 +59,12 @@ BOARD_BOOT_HEADER_VERSION := 0
 BOARD_MKBOOTIMG_ARGS := --ramdisk_offset 0x2000000 --header_version $(BOARD_BOOT_HEADER_VERSION)
 BOARD_KERNEL_IMAGE_NAME := zImage
 BOARD_KERNEL_CMDLINE := console=NULL,115200,n8 androidboot.hardware=qcom user_debug=31 msm_rtb.filter=0x3F ehci-hcd.park=3 loglevel=0 vmalloc=0x16000000
+# SELinux is enforcing. To build a permissive ROM again (debugging only), build
+# with EF52_SELINUX_PERMISSIVE=true in the environment; on a running userdebug
+# build "adb shell su 0 setenforce 0" switches to permissive until reboot.
+ifeq ($(EF52_SELINUX_PERMISSIVE),true)
 BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
+endif
 # 2MiB kernel log (CONFIG_LOG_BUF_SHIFT=19 is 512KiB): the default buffer lost the first ~9s of boot (kernel and
 # first-stage init) by the time the system was up, so boot could not be timed
 BOARD_KERNEL_CMDLINE += log_buf_len=2M
@@ -180,6 +185,9 @@ endif
 # Keep obsolete policy separate from the current vendor policy.
 BOARD_VENDOR_SEPOLICY_DIRS += \
     device/pantech/msm8960-common/sepolicy/vendor
+# Platform-side domains of this device (debug services in the system image).
+SYSTEM_EXT_PRIVATE_SEPOLICY_DIRS += \
+    device/pantech/msm8960-common/sepolicy/private
 
 # Wifi
 BOARD_HAS_QCOM_WLAN              		:= true

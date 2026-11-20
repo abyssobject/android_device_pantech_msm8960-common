@@ -1,2 +1,51 @@
 # Legacy kernel feature switches read by bpfloader, netd and lmkd.
 ro.kernel.ebpf.supported    u:object_r:exported_default_prop:s0 exact bool
+
+# Legacy (pre-Treble) vendor configuration read by the vendor blobs and
+# scripts; without a context it falls into default_prop, which vendor domains
+# cannot read. Unset names are listed too, so their lookups do not hit
+# default_prop either.
+ro.vega.audio_no_vndbinder        u:object_r:vendor_ef52_audio_prop:s0 exact bool
+ro.vega.bt_a2dp_mq_frames         u:object_r:vendor_ef52_audio_prop:s0 exact int
+ro.baseband.arch                  u:object_r:vendor_ef52_audio_prop:s0 exact string
+
+persist.hwc.mdpcomp.enable        u:object_r:vendor_ef52_display_prop:s0 exact bool
+# read by gralloc.msm8960 inside every graphics client
+persist.gralloc.cp.level3         u:object_r:vendor_ef52_gralloc_prop:s0 exact string
+persist.user.panel3D              u:object_r:vendor_ef52_gralloc_prop:s0 exact string
+
+persist.data.netmgrd.qos.enable   u:object_r:vendor_ef52_data_prop:s0 exact bool
+persist.data_netmgrd_mtu          u:object_r:vendor_ef52_data_prop:s0 exact int
+persist.data_netmgrd_nint         u:object_r:vendor_ef52_data_prop:s0 exact int
+persist.net.logmask               u:object_r:vendor_ef52_data_prop:s0 exact string
+ro.use_data_netmgrd               u:object_r:vendor_ef52_data_prop:s0 exact bool
+
+rild.libpath                      u:object_r:vendor_ef52_ril_prop:s0 exact string
+rild.libargs                      u:object_r:vendor_ef52_ril_prop:s0 exact string
+persist.rild.                     u:object_r:vendor_ef52_ril_prop:s0 prefix
+persist.qcril.                    u:object_r:vendor_ef52_ril_prop:s0 prefix
+persist.dsds.enabled              u:object_r:vendor_ef52_ril_prop:s0 exact string
+ro.multi.rild                     u:object_r:vendor_ef52_ril_prop:s0 exact string
+vendor.rild.libargs               u:object_r:vendor_rild_libpath_prop:s0 exact string
+mdm.debug                         u:object_r:vendor_ef52_ril_prop:s0 exact string
+
+# camera.device@3.x / legacy provider tunables, read inside cameraserver
+ro.vendor.camera.                 u:object_r:vendor_ef52_camera_prop:s0 prefix
+
+persist.video.mem.usecache        u:object_r:vendor_ef52_media_prop:s0 exact string
+vidc.                             u:object_r:vendor_ef52_media_prop:s0 prefix
+
+ro.qc.sensors.wl_dis              u:object_r:vendor_ef52_sensors_prop:s0 exact bool
+ro.qc.sdk.sensors.gestures        u:object_r:vendor_ef52_sensors_prop:s0 exact string
+ro.qualcomm.sensors.              u:object_r:vendor_ef52_sensors_prop:s0 prefix
+sys.sns.                          u:object_r:vendor_ef52_sensors_prop:s0 prefix
+
+qcom.bluetooth.soc                u:object_r:vendor_ef52_bt_prop:s0 exact string
+qcom.bt.                          u:object_r:vendor_ef52_bt_prop:s0 prefix
+ro.qc.bluetooth.stack             u:object_r:vendor_ef52_bt_prop:s0 exact string
+
+persist.usb.serialno              u:object_r:vendor_ef52_usb_prop:s0 exact string
+persist.usb.chgdisabled           u:object_r:vendor_ef52_usb_prop:s0 exact string
+persist.usb.currentlimit          u:object_r:vendor_ef52_usb_prop:s0 exact string
+
+ro.qc.sdk.izat.                   u:object_r:vendor_ef52_gnss_prop:s0 prefix

@@ -1,0 +1,34 @@
+# ef52 (APQ8064 + MDM9x15, Linux 3.10)
+#
+# The 3.10 kernel applies genfscon labels to sysfs and debugfs only at the
+# filesystem root, so every sysfs/debugfs node starts as "sysfs"/"debugfs".
+# Nodes that need a specific type are listed in file_contexts instead:
+# ueventd restorecons /sys at coldboot (and each device on its uevent), and
+# init.target.rc restorecons the debugfs nodes after mounting debugfs.
+
+# Power-management knobs tuned by the init scripts (pm_8x60, rpm_resources,
+# cpu_boost, msm_thermal, autosmp, mpdecision, cpufreq_limit, fast_charge,
+# SD controller idle/polling).
+type sysfs_ef52_pm, sysfs_type, fs_type;
+
+# Bluetooth transport knobs (bluetooth_power, hci_smd, sco, HS-UART clock,
+# hci0 idle timeout).
+type sysfs_ef52_bt, sysfs_type, fs_type;
+
+# WCNSS (Riva) Wi-Fi platform device: serial number and factory MAC address.
+type sysfs_ef52_wcnss, sysfs_type, fs_type;
+
+# Subsystem restart / external modem module parameters.
+type sysfs_ef52_modem, sysfs_type, fs_type;
+
+# Touch controller firmware update triggers written once at boot.
+type sysfs_ef52_touch, sysfs_type, fs_type;
+
+# /proc/ef52_kbootwd: kernel boot hang watchdog control (ef52 kernel).
+type proc_ef52_kbootwd, fs_type, proc_type;
+
+# /proc/sys/vm/swappiness: zram tuning written by init.
+type proc_ef52_vm, fs_type, proc_type;
+
+# "rawdata" partition: factory Wi-Fi/Bluetooth MAC addresses (read only).
+type ef52_rawdata_block_device, dev_type;
