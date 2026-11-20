@@ -7,7 +7,6 @@ get_prop(qti_init_shell, vendor_ef52_data_prop)
 get_prop(qti_init_shell, vendor_ef52_ril_prop)
 get_prop(qti_init_shell, vendor_ef52_usb_prop)
 get_prop(qti_init_shell, vendor_ef52_gnss_prop)
-get_prop(qti_init_shell, serialno_prop)
 
 # init.qcom.sh: rmnet_usb data channel setup
 allow qti_init_shell sysfs_ef52_modem:file w_file_perms;

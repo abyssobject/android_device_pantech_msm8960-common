@@ -10,7 +10,7 @@ allow mm-qcamerad same_process_hal_file:file execmod;
 
 # --- netmgrd (runs as root, manages radio-owned sockets/dirs) ---
 get_prop(netmgrd, vendor_ef52_data_prop)
-allow netmgrd self:global_capability_class_set dac_override;
+allow netmgrd self:capability dac_override;
 
 # --- qmuxd / thermald: QMI log mask ---
 get_prop(qmuxd, vendor_ef52_data_prop)

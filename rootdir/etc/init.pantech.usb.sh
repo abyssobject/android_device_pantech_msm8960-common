@@ -33,16 +33,11 @@
 # do not have unique serial number.
 # User needs to set unique usb serial number to persist.usb.serialno
 #
+# ef52: the ro.serialno fallback is written by the platform init.usb.rc
+# ("write .../iSerial ${ro.serialno}"); the vendor script may not read it.
 serialno=`getprop persist.usb.serialno`
 case "$serialno" in
-    "")
-    serialnum=`getprop ro.serialno`
-    case "$serialnum" in
-        "");; #Do nothing, use default serial number
-        *)
-        echo "$serialnum" > /sys/class/android_usb/android0/iSerial
-    esac
-    ;;
+    "") ;;
     *)
     echo "$serialno" > /sys/class/android_usb/android0/iSerial
 esac

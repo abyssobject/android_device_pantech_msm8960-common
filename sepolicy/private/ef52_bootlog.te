@@ -21,10 +21,14 @@ allow ef52_bootlog proc_version:file r_file_perms;
 allow ef52_bootlog proc_cmdline:file r_file_perms;
 allow ef52_bootlog proc_pid_max:file r_file_perms;
 r_dir_file(ef52_bootlog, domain)
-dontaudit ef52_bootlog self:global_capability_class_set sys_ptrace;
+dontaudit ef52_bootlog self:capability sys_ptrace;
 
-# getprop (dump of every property)
-allow ef52_bootlog property_type:file r_file_perms;
+# getprop: every domain already reads the build/init/boot properties; add the
+# system, radio and vold state, and skip the restricted ones silently.
+get_prop(ef52_bootlog, system_prop)
+get_prop(ef52_bootlog, radio_prop)
+get_prop(ef52_bootlog, vold_prop)
+dontaudit ef52_bootlog property_type:file r_file_perms;
 
 # /cache/ef52-bootlog
 allow ef52_bootlog cache_file:dir create_dir_perms;

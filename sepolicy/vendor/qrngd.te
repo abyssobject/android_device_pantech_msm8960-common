@@ -7,6 +7,6 @@ init_daemon_domain(qrngd)
 
 allow qrngd hw_random_device:chr_file r_file_perms;
 allow qrngd random_device:chr_file rw_file_perms;
-allow qrngd self:global_capability_class_set sys_admin;
+allow qrngd self:capability sys_admin;
 # It drops root after opening the devices.
-allow qrngd self:global_capability_class_set { setuid setgid dac_override };
+allow qrngd self:capability { setuid setgid dac_override };
