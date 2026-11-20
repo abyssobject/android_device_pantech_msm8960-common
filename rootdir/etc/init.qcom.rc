@@ -654,3 +654,9 @@ on early-init
 # Boot finished: stop the kernel watchdog (it also routes panics to recovery).
 on property:sys.boot_completed=1
     write /proc/ef52_kbootwd 0
+
+# ef52 bring-up diagnostics: report tasks blocked > 120 s (no panic). Something in
+# userspace raises the timeout to 720 s, longer than init's 300 s reboot monitor,
+# so shutdown stalls left no stacks in the log partition.
+on property:sys.boot_completed=1
+    write /proc/sys/kernel/hung_task_timeout_secs 120
