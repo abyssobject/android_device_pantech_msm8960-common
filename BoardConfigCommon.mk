@@ -154,9 +154,8 @@ TARGET_PROVIDES_GPS_LOC_API := true
 # Properties
 TARGET_SYSTEM_PROP += $(COMMON_PATH)/system.prop
 
-# Dexpreopt
+# Dexpreopt: boot image, system server and apps (apps with a profile get speed-profile)
 WITH_DEXPREOPT := true
-WITH_DEXPREOPT_BOOT_IMG_AND_SYSTEM_SERVER_ONLY := true
 
 # SDClang
 BOARD_USES_QCOM_HARDWARE := true
