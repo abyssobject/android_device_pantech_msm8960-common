@@ -21,15 +21,85 @@
 #include <cstdint>
 #include <dlfcn.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <hardware/camera.h>
 #include <hardware/gralloc.h>
 #include <log/log.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
 #include <utils/Mutex.h>
 
+#include <map>
 #include <string>
 #include <vector>
 
 namespace {
+
+// msm ION ABI of the ef52 3.10 kernel (include/uapi/linux/{ion,msm_ion}.h).
+struct EfIonFdData { void* handle; int fd; };
+struct EfIonHandleData { void* handle; };
+struct EfIonCustomData { unsigned int cmd; unsigned long arg; };
+struct EfIonFlushData { void* handle; int fd; void* vaddr; unsigned int offset; unsigned int length; };
+#define EF_ION_IOC_FREE _IOWR('I', 1, struct EfIonHandleData)
+#define EF_ION_IOC_IMPORT _IOWR('I', 5, struct EfIonFdData)
+#define EF_ION_IOC_CUSTOM _IOWR('I', 6, struct EfIonCustomData)
+#define EF_ION_IOC_CLEAN_INV_CACHES _IOWR('M', 2, struct EfIonFlushData)
+
+// The vendor HAL hands the record frames to the CPU (A16 HAL1 BUFFER_QUEUE
+// path: CameraClient copies them into encoder buffers), but it never does
+// cache maintenance for a CPU reader: the VFE writes the ION buffer by DMA
+// while CPU cache lines of the same memory still hold old data. Track the
+// ION fd behind every fd-backed camera_memory_t so the record frame can be
+// cleaned+invalidated before it is passed on.
+android::Mutex gIonLock;
+int gIonDev = -1;
+std::map<const camera_memory_t*, int> gMemoryFds;  // dup'ed ION fds
+
+void rememberMemoryFd(const camera_memory_t* mem, int fd) {
+    if (mem == nullptr || fd < 0) return;
+    int dupFd = fcntl(fd, F_DUPFD_CLOEXEC, 0);
+    if (dupFd < 0) return;
+    android::Mutex::Autolock lock(gIonLock);
+    auto it = gMemoryFds.find(mem);
+    if (it != gMemoryFds.end()) close(it->second);
+    gMemoryFds[mem] = dupFd;
+}
+
+void forgetAllMemoryFds() {
+    android::Mutex::Autolock lock(gIonLock);
+    for (auto& entry : gMemoryFds) close(entry.second);
+    gMemoryFds.clear();
+}
+
+void invalidateForCpu(const camera_memory_t* mem, unsigned int index) {
+    if (mem == nullptr || mem->data == nullptr || mem->size == 0) return;
+    android::Mutex::Autolock lock(gIonLock);
+    auto it = gMemoryFds.find(mem);
+    if (it == gMemoryFds.end()) return;
+    if (gIonDev < 0) {
+        gIonDev = open("/dev/ion", O_RDONLY | O_CLOEXEC);
+        if (gIonDev < 0) {
+            ALOGE("Unable to open /dev/ion for record frame cache maintenance: %d", errno);
+            return;
+        }
+    }
+    EfIonFdData fdData = {nullptr, it->second};
+    if (ioctl(gIonDev, EF_ION_IOC_IMPORT, &fdData) != 0) {
+        ALOGE("ION import of record frame buffer failed: %d", errno);
+        return;
+    }
+    EfIonFlushData flush = {fdData.handle, it->second,
+                            static_cast<uint8_t*>(mem->data) + index * mem->size,
+                            static_cast<unsigned int>(index * mem->size),
+                            static_cast<unsigned int>(mem->size)};
+    EfIonCustomData custom = {EF_ION_IOC_CLEAN_INV_CACHES,
+                              reinterpret_cast<unsigned long>(&flush)};
+    if (ioctl(gIonDev, EF_ION_IOC_CUSTOM, &custom) != 0) {
+        ALOGE("ION cache invalidate of record frame %u failed: %d", index, errno);
+    }
+    EfIonHandleData handleData = {fdData.handle};
+    ioctl(gIonDev, EF_ION_IOC_FREE, &handleData);
+}
 
 constexpr const char* kVendorCameraHal =
         "/vendor/lib/hw/camera.msm8960.vendor.so";
@@ -170,6 +240,9 @@ void dataCallback(int32_t type, const camera_memory_t* data, unsigned int index,
 void timestampCallback(int64_t timestamp, int32_t type,
                        const camera_memory_t* data, unsigned int index, void* user) {
     auto wrapped = static_cast<WrappedDevice*>(user);
+    // The record frame is read by the CPU next (CameraClient copies it into
+    // the encoder's buffer): drop stale cache lines over the DMA-written data.
+    invalidateForCpu(data, index);
     if ((wrapped->enabledMessages.load() & type) != 0 && wrapped->timestamp) {
         wrapped->timestamp(timestamp, type, data, index, wrapped->callbackUser);
     }
@@ -190,7 +263,9 @@ camera_memory_t* memoryCallback(int fd, size_t size, unsigned int count, void*) 
             callbackUser = wrapped->callbackUser;
         }
     }
-    return memory ? memory(fd, size, count, callbackUser) : nullptr;
+    camera_memory_t* mem = memory ? memory(fd, size, count, callbackUser) : nullptr;
+    rememberMemoryFd(mem, fd);
+    return mem;
 }
 
 constexpr camera_request_memory kMemoryCallbacks[] = {
@@ -330,6 +405,23 @@ int wrappedStartRecording(camera_device_t* device) {
     if (device->priv != nullptr) {
         auto privateData = static_cast<uint8_t*>(device->priv);
         auto hal = *reinterpret_cast<uint8_t**>(privateData + kHalObjectOffset);
+        if (hal != nullptr && hal[kPreviewRestartNeededOffset] != 0 &&
+                vendorOps->preview_enabled(device)) {
+            // The record stream was initialized in wrappedStartPreview() with the
+            // video size of that moment (the HAL default is 1920x1088). When the
+            // app changes video-size afterwards, the HAL asks for a preview
+            // restart. Without it the record stream keeps delivering 1920x1088
+            // NV12 frames while the encoder is configured for the new size, and
+            // it reads luma as chroma (all-green video). Restart through our
+            // start_preview path so the record stream is re-initialized.
+            ALOGI("Video size changed during preview: restarting preview before recording");
+            vendorOps->stop_preview(device);
+            int rc = wrappedStartPreview(device);
+            if (rc != 0) {
+                ALOGE("Unable to restart preview for the new video size: %d", rc);
+                return rc;
+            }
+        }
         if (hal != nullptr) {
             int rc = gSetRecordingHintValue(hal, 1);
             if (rc != 0) {
@@ -438,6 +530,8 @@ int wrappedClose(hw_device_t* hwDevice) {
         android::Mutex::Autolock lock(gLock);
         gMemoryDevices[wrapped->callbackSlot] = nullptr;
     }
+    // The vendor HAL has released its memory; drop our ION fd references.
+    forgetAllMemoryFds();
     delete wrapped;
     return rc;
 }
