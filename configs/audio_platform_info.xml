@@ -40,7 +40,10 @@
 
         <!-- Input devices -->
         <device name="SND_DEVICE_IN_HANDSET_MIC" acdb_id="4" />
-        <device name="SND_DEVICE_IN_VOICE_REC_MIC" acdb_id="53" />
+        <!-- ACDB 53 selects COPP topology 0x10313, which this DSP rejects
+             (ADM_CMD_COPP_OPEN status 3): voice recognition never got data.
+             Use the handset mic calibration (HAL default, topology 0x10315). -->
+        <device name="SND_DEVICE_IN_VOICE_REC_MIC" acdb_id="4" />
         <device name="SND_DEVICE_IN_CAMCORDER_MIC" acdb_id="56" />
         <device name="SND_DEVICE_IN_BT_SCO_MIC" acdb_id="51" />
         <device name="SND_DEVICE_IN_VOIP_HANDSET_MIC" acdb_id="57" />
