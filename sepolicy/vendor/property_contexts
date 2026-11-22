@@ -13,6 +13,8 @@ persist.hwc.mdpcomp.enable        u:object_r:vendor_ef52_display_prop:s0 exact b
 # read by gralloc.msm8960 inside every graphics client
 persist.gralloc.cp.level3         u:object_r:vendor_ef52_gralloc_prop:s0 exact string
 persist.user.panel3D              u:object_r:vendor_ef52_gralloc_prop:s0 exact string
+# optional tunable probed by the Adreno libgsl in every GL/gralloc client (unset)
+ro.graphics.memory                u:object_r:vendor_ef52_gralloc_prop:s0 exact string
 
 persist.data.netmgrd.qos.enable   u:object_r:vendor_ef52_data_prop:s0 exact bool
 persist.data_netmgrd_mtu          u:object_r:vendor_ef52_data_prop:s0 exact int
