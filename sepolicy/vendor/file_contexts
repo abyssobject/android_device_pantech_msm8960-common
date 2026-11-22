@@ -132,3 +132,9 @@
 /sys/kernel/debug/tracing/trace                 u:object_r:debugfs_tracing:s0
 /sys/kernel/debug/tracing/per_cpu/cpu[0-9]+(/.*)? u:object_r:debugfs_tracing:s0
 /sys/kernel/debug/wakeup_sources                u:object_r:debugfs_wakeup_sources:s0
+
+# The prebuilt libgps.utils (GNSS HAL) reads its configuration from the fixed
+# path /etc/gps.conf (= /system/etc/gps.conf). Give that copy the vendor config
+# label so hal_gnss_default may read it (system_file read was denied, so the
+# GPS stack ran without gps.conf: no XTRA/SUPL/NTP servers, defaults only).
+/system/etc/gps\.conf    u:object_r:vendor_configs_file:s0
