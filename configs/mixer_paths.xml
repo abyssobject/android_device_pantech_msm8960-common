@@ -83,6 +83,12 @@
     <ctl name="SLIM TX3 MUX" value="ZERO" />
     <ctl name="SLIM TX2 MUX" value="ZERO" />
     <ctl name="SLIM TX1 MUX" value="ZERO" />
+    <!-- Linux 3.10 tabla: TX ports join a SLIMbus capture interface through the
+         AIFn_CAP Mixer controls (the 3.4 driver hard-wired AIF1_CAP = TX7..).
+         SLIMBUS_0_TX (all microphone capture, voice uplink) uses AIF1_CAP:
+         TX7 always, TX8 added by the dual-mic paths below. -->
+    <ctl name="AIF1_CAP Mixer SLIM TX7" value="1" />
+    <ctl name="AIF1_CAP Mixer SLIM TX8" value="0" />
     <ctl name="DEC10 MUX" value="ZERO" />
     <ctl name="DEC9 MUX" value="ZERO" />
     <ctl name="DEC8 MUX" value="ZERO" />
@@ -368,6 +374,7 @@
         <ctl name="SLIM TX8 MUX" value="DEC9" />
         <ctl name="DEC9 MUX" value="ADC3" />
         <ctl name="SLIM_0_TX Channels" value="Two" />
+        <ctl name="AIF1_CAP Mixer SLIM TX8" value="1" />
         <ctl name="DEC7 Volume" value="63" />
         <ctl name="DEC9 Volume" value="63" />
         <ctl name="MICBIAS1 CAPLESS Switch" value="0" />
@@ -379,6 +386,7 @@
         <ctl name="SLIM TX8 MUX" value="DEC8" />
         <ctl name="DEC8 MUX" value="DMIC2" />
         <ctl name="SLIM_0_TX Channels" value="Two" />
+        <ctl name="AIF1_CAP Mixer SLIM TX8" value="1" />
         <ctl name="IIR1 INP1 Volume" value="63" />
         <ctl name="IIR1 INP1 MUX" value="DEC7" />
     </path>
@@ -389,6 +397,7 @@
         <ctl name="SLIM TX8 MUX" value="DEC9" />
         <ctl name="DEC9 MUX" value="ADC3" />
         <ctl name="SLIM_0_TX Channels" value="Two" />
+        <ctl name="AIF1_CAP Mixer SLIM TX8" value="1" />
     </path>
 
     <path name="speaker-dmic-broadside">
@@ -397,6 +406,7 @@
         <ctl name="SLIM TX8 MUX" value="DEC8" />
         <ctl name="DEC8 MUX" value="DMIC2" />
         <ctl name="SLIM_0_TX Channels" value="Two" />
+        <ctl name="AIF1_CAP Mixer SLIM TX8" value="1" />
     </path>
 
     <path name="voice-dmic-ef-tmus">
