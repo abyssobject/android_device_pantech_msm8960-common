@@ -27,6 +27,15 @@
 #
 #
 
+# init.rc imports init.boringssl.${ro.zygote}.rc (and the vendor rc
+# boringssl_self_test.${ro.zygote}.rc), which the build installs as symlinks
+# to the zygote64_32 files for zygote32. init opens rc files with O_NOFOLLOW,
+# so on 32-bit-only builds both fail with ELOOP and the boot-time BoringSSL
+# self tests never run. Import the real files; their 64-bit triggers are gated
+# on ro.product.cpu.abilist64 and stay inactive.
+import /system/etc/init/hw/init.boringssl.zygote64_32.rc
+import /vendor/etc/boringssl_self_test.zygote64_32.rc
+
 on early-init
     mount debugfs debugfs /sys/kernel/debug
     # No tracefs on 3.10: the kernel provides an empty /sys/kernel/tracing,
