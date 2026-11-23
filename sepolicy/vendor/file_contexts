@@ -122,11 +122,22 @@
 # genfs_contexts for debugfs)
 /sys/kernel/debug/tracing(/.*)?                 u:object_r:debugfs_tracing_debug:s0
 /sys/kernel/debug/tracing/instances(/.*)?       u:object_r:debugfs_tracing_instances:s0
+/sys/kernel/debug/tracing/instances/wifi(/.*)?  u:object_r:debugfs_wifi_tracing:s0
 /sys/kernel/debug/tracing/printk_formats        u:object_r:debugfs_tracing_printk_formats:s0
 /sys/kernel/debug/tracing/trace_marker          u:object_r:debugfs_trace_marker:s0
 /sys/kernel/debug/tracing/tracing_on            u:object_r:debugfs_tracing:s0
 /sys/kernel/debug/tracing/trace                 u:object_r:debugfs_tracing:s0
 /sys/kernel/debug/tracing/per_cpu/cpu[0-9]+(/.*)? u:object_r:debugfs_tracing:s0
+# Same tree, bind-mounted at the tracefs path (init.target.rc). The mount
+# point itself is a sysfs directory and keeps its sysfs label.
+/sys/kernel/tracing/.*                     u:object_r:debugfs_tracing_debug:s0
+/sys/kernel/tracing/instances(/.*)?       u:object_r:debugfs_tracing_instances:s0
+/sys/kernel/tracing/instances/wifi(/.*)?  u:object_r:debugfs_wifi_tracing:s0
+/sys/kernel/tracing/printk_formats        u:object_r:debugfs_tracing_printk_formats:s0
+/sys/kernel/tracing/trace_marker          u:object_r:debugfs_trace_marker:s0
+/sys/kernel/tracing/tracing_on            u:object_r:debugfs_tracing:s0
+/sys/kernel/tracing/trace                 u:object_r:debugfs_tracing:s0
+/sys/kernel/tracing/per_cpu/cpu[0-9]+(/.*)? u:object_r:debugfs_tracing:s0
 /sys/kernel/debug/wakeup_sources                u:object_r:debugfs_wakeup_sources:s0
 
 # The prebuilt libgps.utils (GNSS HAL) reads its configuration from the fixed

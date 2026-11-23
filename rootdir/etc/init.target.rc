@@ -29,6 +29,9 @@
 
 on early-init
     mount debugfs debugfs /sys/kernel/debug
+    # No tracefs on 3.10: the kernel provides an empty /sys/kernel/tracing,
+    # expose the debugfs tracing tree there (wifi last-mile log, init).
+    mount none /sys/kernel/debug/tracing /sys/kernel/tracing bind
     # 3.10 debugfs ignores genfscon paths: label the nodes the platform uses.
     restorecon /sys/kernel/debug/tracing
     restorecon /sys/kernel/debug/tracing/trace_marker
