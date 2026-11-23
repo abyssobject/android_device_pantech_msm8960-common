@@ -1,0 +1,12 @@
+# rtc_offsetd: restore/save "wall clock - RTC" (PM8921 RTC is read-only)
+type rtc_offsetd, domain;
+type rtc_offsetd_exec, exec_type, vendor_file_type, file_type;
+init_daemon_domain(rtc_offsetd)
+
+type rtc_offset_data_file, file_type, data_file_type;
+
+allow rtc_offsetd self:global_capability_class_set sys_time;
+allow rtc_offsetd rtc_device:chr_file r_file_perms;
+allow rtc_offsetd vendor_data_file:dir search;
+allow rtc_offsetd rtc_offset_data_file:dir rw_dir_perms;
+allow rtc_offsetd rtc_offset_data_file:file create_file_perms;

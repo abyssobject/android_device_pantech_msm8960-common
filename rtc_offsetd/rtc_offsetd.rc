@@ -1,0 +1,19 @@
+# Keep the wall clock across reboots (the PM8921 RTC is read-only from Linux).
+# /dev/rtc0 is system-owned; setting the clock needs only CAP_SYS_TIME.
+service rtc_offsetd_restore /vendor/bin/rtc_offsetd restore
+    user system
+    group system
+    capabilities SYS_TIME
+    disabled
+    oneshot
+
+service rtc_offsetd /vendor/bin/rtc_offsetd watch
+    user system
+    group system
+    capabilities SYS_TIME
+    disabled
+
+on post-fs-data
+    mkdir /data/vendor/rtc 0700 system system
+    exec_start rtc_offsetd_restore
+    start rtc_offsetd

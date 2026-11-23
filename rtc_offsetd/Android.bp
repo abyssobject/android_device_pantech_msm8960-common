@@ -1,0 +1,8 @@
+cc_binary {
+    name: "rtc_offsetd",
+    vendor: true,
+    srcs: ["rtc_offsetd.cpp"],
+    shared_libs: ["liblog"],
+    cflags: ["-Wall", "-Werror"],
+    init_rc: ["rtc_offsetd.rc"],
+}

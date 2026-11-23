@@ -134,3 +134,7 @@
 # label so hal_gnss_default may read it (system_file read was denied, so the
 # GPS stack ran without gps.conf: no XTRA/SUPL/NTP servers, defaults only).
 /system/etc/gps\.conf    u:object_r:vendor_configs_file:s0
+
+# rtc_offsetd (wall clock across reboots, read-only PM8921 RTC)
+/(vendor|system/vendor)/bin/rtc_offsetd                                       u:object_r:rtc_offsetd_exec:s0
+/data/vendor/rtc(/.*)?                                                        u:object_r:rtc_offset_data_file:s0

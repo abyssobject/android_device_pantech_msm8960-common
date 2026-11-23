@@ -339,3 +339,6 @@ PRODUCT_PACKAGES += \
 
 # Wi-Fi framework settings (com.android.wifi.resources overlay)
 PRODUCT_PACKAGES += WifiResOverlayMsm8960
+
+# Wall clock across reboots (the PM8921 RTC is read-only from Linux)
+PRODUCT_PACKAGES += rtc_offsetd
