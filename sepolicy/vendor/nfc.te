@@ -1,0 +1,5 @@
+# PN544 (NXP HCI): libnfc-nxp runs inside the NFC app and opens /dev/pn544
+# itself through the legacy nfc.msm8960 HAL (same_process_hal_file); there is
+# no separate NFC HAL process. Android 16 grants nfc_device only to hal_nfc
+# (the app.te neverallow exempts the nfc domain).
+allow nfc nfc_device:chr_file rw_file_perms;

@@ -51,6 +51,7 @@
 /(vendor|system/vendor)/lib/hw/memtrack\.msm8960\.so                        u:object_r:same_process_hal_file:s0
 /(vendor|system/vendor)/lib/hw/android\.hardware\.memtrack@1\.0-impl\.so    u:object_r:same_process_hal_file:s0
 /(vendor|system/vendor)/lib/hw/power\.default\.so                           u:object_r:same_process_hal_file:s0
+/(vendor|system/vendor)/lib/hw/nfc\.msm8960\.so                             u:object_r:same_process_hal_file:s0
 /(vendor|system/vendor)/lib/hw/camera\.msm8960(\.vendor)?\.so               u:object_r:same_process_hal_file:s0
 /(vendor|system/vendor)/lib/hw/android\.hardware\.camera\.provider@2\.4-impl\.so u:object_r:same_process_hal_file:s0
 /(vendor|system/vendor)/lib/android\.hardware\.camera\.[a-z]+@[0-9.]+(-[a-z]+)?\.so u:object_r:same_process_hal_file:s0
