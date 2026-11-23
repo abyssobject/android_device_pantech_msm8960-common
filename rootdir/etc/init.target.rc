@@ -48,10 +48,8 @@ on early-init
     restorecon /sys/kernel/debug/tracing/trace
     restorecon /sys/kernel/debug/wakeup_sources
 
-# The rest of the tracing tree (atrace/perfetto controls, ~3400 nodes, 1.4 s)
-# is labelled once boot has finished instead of blocking early-init.
-on property:sys.boot_completed=1
-    restorecon_recursive /sys/kernel/debug/tracing
+# The rest of the tracing tree is labelled by init.rc's post-fs
+# "restorecon --recursive --cross-filesystems /sys/kernel/debug".
 
 on early-boot
     start timekeep
