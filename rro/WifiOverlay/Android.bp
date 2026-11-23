@@ -1,0 +1,8 @@
+// Wi-Fi settings for the WCN3660 (prima): since Android 11 they live in
+// com.android.wifi.resources (wifi apex), so the frameworks/base overlay
+// entries (config_wifi_*) no longer apply.
+runtime_resource_overlay {
+    name: "WifiResOverlayMsm8960",
+    vendor: true,
+    sdk_version: "current",
+}

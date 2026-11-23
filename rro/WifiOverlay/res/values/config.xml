@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- prima supports scheduled (PNO) scans (FEATURE_WLAN_SCAN_PNO, cfg80211
+         sched_scan). Without this the framework treats PNO as unavailable and,
+         with the screen off, never scans: a dropped connection is not restored
+         until the screen is turned on. -->
+    <bool translatable="false" name="config_wifi_background_scan_support">true</bool>
+</resources>

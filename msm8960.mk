@@ -336,3 +336,6 @@ PRODUCT_SYSTEM_PROPERTIES += \
 # camera1 app.
 PRODUCT_PACKAGES += \
     LegacyCamera
+
+# Wi-Fi framework settings (com.android.wifi.resources overlay)
+PRODUCT_PACKAGES += WifiResOverlayMsm8960
