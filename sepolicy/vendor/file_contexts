@@ -96,7 +96,6 @@
 /sys/devices/platform/msm_ssbi\.0/pm8921-core/smb347_charger/power_supply(/.*)? u:object_r:sysfs_batteryinfo:s0
 /sys/devices/platform/msm_ssbi\.0/pm8921-core/pm8xxx-led(/.*)?      u:object_r:sysfs_leds:s0
 /sys/devices/platform/msm_fb\.[0-9]+/leds(/.*)?                     u:object_r:sysfs_leds:s0
-/sys/devices/platform/msm_ssbi\.0/pm8921-core/pm8xxx-vib/amp        u:object_r:sysfs_vibrator:s0
 /sys/devices/virtual/timed_output/vibrator(/.*)?                    u:object_r:sysfs_vibrator:s0
 /sys/devices/virtual/android_usb(/.*)?                              u:object_r:sysfs_android_usb:s0
 /sys/devices/virtual/graphics/fb[0-9]+(/.*)?                        u:object_r:sysfs_graphics:s0
@@ -113,15 +112,11 @@
 /sys/module/lowmemorykiller/parameters(/.*)?                        u:object_r:sysfs_lowmemorykiller:s0
 /sys/module/wlan/parameters/fwpath                                  u:object_r:sysfs_wlan_fwpath:s0
 /sys/module/(pm_8x60|rpm_resources|cpu_boost|msm_thermal)(/.*)?     u:object_r:sysfs_ef52_pm:s0
-/sys/kernel/(autosmp|msm_mpdecision|cpufreq_limit|fast_charge)(/.*)? u:object_r:sysfs_ef52_pm:s0
 /sys/devices/platform/msm_sdcc\.[1-4]/(polling|idle_timeout)        u:object_r:sysfs_ef52_pm:s0
 /sys/module/(bluetooth_power|hci_smd|sco)/parameters(/.*)?          u:object_r:sysfs_ef52_bt:s0
-/sys/devices/platform/msm_serial_hs\.0/clock                        u:object_r:sysfs_ef52_bt:s0
 /sys/devices/virtual/bluetooth/hci[0-9]+/idle_timeout               u:object_r:sysfs_ef52_bt:s0
 /sys/devices/platform/wcnss_wlan\.0/(serial_number|wcnss_mac_addr)  u:object_r:sysfs_ef52_wcnss:s0
 /sys/module/(subsystem_restart|mdm_common|pil_riva|wcnss_ssr_8960|rmnet_usb)/parameters(/.*)? u:object_r:sysfs_ef52_modem:s0
-/sys/devices/i2c-3/3-0024/cyttsp_update_fw                          u:object_r:sysfs_ef52_touch:s0
-/sys/devices/i2c-3/3-005b/update_fw                                 u:object_r:sysfs_ef52_touch:s0
 
 # debugfs (restorecon in init.target.rc after the mount; mirrors the platform
 # genfs_contexts for debugfs)
