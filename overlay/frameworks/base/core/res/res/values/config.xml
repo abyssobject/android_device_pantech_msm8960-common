@@ -302,4 +302,11 @@
          62Hz that fits, 31Hz, and every app animates at half rate. Let the
          render rate follow the panel. -->
     <integer name="config_defaultRefreshRate">62</integer>
+
+    <!-- Kernel lowmemorykiller minfree for the top (cached) level: 136 MB instead of
+         ProcessList's 180 MB; ProcessList scales the other levels proportionally.
+         ef52 (2 GB RAM, 2 GB zram, legacy in-kernel LMK): A/B over 4 fresh boots each,
+         10 apps x 3 rounds: cold starts in rounds 2-3 15 -> 9, avg launch 1424 -> 1205 ms,
+         LMK kills 51 -> 33 (all still adj >= 950), more anon goes to zram, 0 ANR/crash. -->
+    <integer name="config_lowMemoryKillerMinFreeKbytesAbsolute">139264</integer>
 </resources>
