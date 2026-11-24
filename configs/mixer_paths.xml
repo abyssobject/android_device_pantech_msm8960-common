@@ -431,6 +431,10 @@
 
     <path name="voice-rec-dmic-ef">
         <path name="dmic-endfire" />
+        <!-- voice recognition: unity-ish gain like the single-mic record paths (DEC +11 dB);
+             the shared dmic paths keep -21 dB for the call uplink -->
+        <ctl name="DEC7 Volume" value="95" />
+        <ctl name="DEC9 Volume" value="95" />
     </path>
 
     <path name="voice-rec-dmic-bs">
@@ -439,6 +443,8 @@
 
     <path name="voice-rec-dmic-ef-fluence">
         <path name="dmic-endfire" />
+        <ctl name="DEC7 Volume" value="95" />
+        <ctl name="DEC9 Volume" value="95" />
     </path>
 
     <path name="voice-rec-dmic-bs-fluence">
