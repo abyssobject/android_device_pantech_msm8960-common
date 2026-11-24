@@ -14,7 +14,9 @@
  *   rtc_offsetd watch     daemon: block on a CLOCK_REALTIME timerfd with
  *                         TFD_TIMER_CANCEL_ON_SET, which returns only when the
  *                         wall clock is set (network time, user, restore), and
- *                         save "wall clock - RTC" then. No periodic wakeups.
+ *                         save "wall clock - RTC" then (not for the framework's
+ *                         build-time floor, which is no real time). No periodic
+ *                         wakeups.
  */
 #include <errno.h>
 #include <fcntl.h>
@@ -23,6 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/ioctl.h>
+#include <sys/system_properties.h>
 #include <sys/time.h>
 #include <sys/timerfd.h>
 #include <time.h>
@@ -77,7 +80,20 @@ static void save_offset() {
     struct timeval now;
     gettimeofday(&now, nullptr);
     long long rtc;
-    if (now.tv_sec < kMinSane || !read_rtc(&rtc)) return;
+    if (now.tv_sec < kMinSane) return;
+    // Without a saved offset the clock starts at the RTC count (1970) and the
+    // framework (AlarmManagerService) raises it to the build time. That is a
+    // guess, not a wall clock: saving it would restore "build time + uptime"
+    // at every later boot until network time arrives. Ignore that set.
+    char prop[PROP_VALUE_MAX] = "";
+    if (__system_property_get("ro.build.date.utc", prop) > 0) {
+        long long floor = atoll(prop);
+        if (floor > 0 && llabs((long long)now.tv_sec - floor) <= 10) {
+            ALOGI("clock is at the build-time floor %lld; offset not saved", floor);
+            return;
+        }
+    }
+    if (!read_rtc(&rtc)) return;
     long long off = (long long)now.tv_sec - rtc;
     long long old;
     if (read_offset(&old) && llabs(old - off) <= 1) return;  // unchanged (rounding)
